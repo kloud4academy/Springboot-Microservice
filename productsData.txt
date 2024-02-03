@@ -1,0 +1,517 @@
+{
+  "productId": "10001",
+  "productName": "Solid Cotton Linen Blend Mandarin Women's Top",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-1.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Black",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "LadiesPants",
+  "productDesc": "Ladies Skin Pant for adults"
+}
+=============================111===================Women===========
+{
+  "productId": "10002",
+  "productName": "Solid V Neck Polyester Women's Mini Dress",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-1.jpg",
+  "sizes": [
+    "small",
+    "medium"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Mini Dress",
+  "productDesc": "AND stemmed out of the realization that the modern Indian woman didn�t have too many contemporary silhouettes to choose from. Bridging this gap ever since, today AND has garnered the recognition of a brand that makes global styles for the contemporary woman, understanding the sensibilities of fashion, comfort, quality, and style effortlessly. Often appealing and catering to a sect that is progressive, ambitious, and live a wholesome life; the label is ever-involving while keeping itself aligned with the needs of the urban Indian woman"
+}
+============================2=====================Women========
+{
+  "productId": "10003",
+  "productName": "Printed Round Neck Polyester Women's Knee Length Dress",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-4.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Dress",
+  "productDesc": "AND stemmed out of the realization that the modern Indian woman didn't have too many contemporary silhouettes to choose from. Bridging this gap ever since, today AND has garnered the recognition of a brand that makes global styles for the contemporary woman, understanding the sensibilities of fashion, comfort, quality, and style effortlessly. Often appealing and catering to a sect that is progressive, ambitious, and live a wholesome life; the label is ever-involving while keeping itself aligned with the needs of the urban Indian woman"
+}
+=========================3======== BOY =====================
+{
+  "productId": "10005",
+  "productName": "Printed Cotton Regular Fit Boys Track Pants",
+  "price": "150$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-5.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello"
+  ],
+  "category": "Men",
+  "productType": "Track Pants",
+  "productDesc": "Olive green, regular fit, cotton track pants by Life. These bottoms have an elastic waistband, drawstring closure, pockets, and a camo print all over the fabric"
+}
+=======================4==================MEn==========
+{
+  "productId": "10006",
+  "productName": "Solid Cotton Blend Slim Fit Men's Joggers for Above 18 Years Old",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-6.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Joggers",
+  "productDesc": "Solid Cotton Blend Slim Fit Men's Joggers designed in India.Good Fit for Girls"
+}
+=========================5============Women=========
+{
+  "productId": "10007",
+  "productName": "Solid Round Neck Polyester Women's Casual Wear Jacket",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-3.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Jacket",
+  "productDesc": "Gentle machine wash at 40 Deg c with mild soap Do not bleach Wash dark colour seperately Tumble Dry Cool iron No dry clean."
+}
+========================6==========Women============
+{
+  "productId": "10007",
+  "productName": "Floral Polyester Round Neck Women's Top and Good Fit for Youngers",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-7.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Tops",
+  "productDesc": "AND stemmed out of the realization that the modern Indian woman didnt have too many contemporary silhouettes to choose from. Bridging this gap ever since, today AND has garnered the recognition of a brand that makes global styles for the contemporary woman, understanding the sensibilities of fashion, comfort, quality, and style effortlessly. Often appealing and catering to a sect that is progressive, ambitious, and live a wholesome life; the label is ever-involving while keeping itself aligned with the needs of the urban Indian woman."
+}
+======================7========Women=============
+{
+  "productId": "10008",
+  "productName": "Solid Cotton Linen Blend Mandarin Women's Top",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-8.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Tops",
+  "productDesc": "And stemmed out of the realization that the modern indian woman didn�t have too many contemporary silhouettes to choose from. Bridging this gap ever since, today and has garnered the recognition of a brand that makes global styles for the contemporary woman, understanding the sensibilities of fashion, comfort, quality, and style effortlessly. Often appealing and catering to a sect that is progressive, ambitious, and live a wholesome life; the label is ever-involving while keeping itself aligned with the needs of the urban indian woman."
+}
+========================8========Women==========
+{
+  "productId": "10009",
+  "productName": "Printed Rayon Mandarin Women's Kurta For Young Girls",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-10.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "Kurtas",
+  "productDesc": "Stop calf length printed a line kurta with 3/4th sleeves and mandarin collar for casual wear"
+}
+========================9============Women======
+{
+  "productId": "10010",
+  "productName": "Solid Cotton Round Neck Women's Oversized T-Shirt",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-9.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Women",
+  "productType": "T-Shirts",
+  "productDesc": "This Oversized T-Shirt from DIFFERENCE OF OPINION is a great way to look stylish as ever. It can be paired with denim to have a complete look."
+}
+=======================10====Home Category===============
+{
+  "productId": "20004",
+  "productName": "Category1",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-1.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "Category",
+  "productDesc": "Ladies Family Wear"
+}
+=======================11=============Home Category=======
+{
+  "productId": "20003",
+  "productName": "category-2.jpg",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-2.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "Category",
+  "productDesc": "Ladies Skin Pant"
+}
+=========================12======Home Category========
+{
+  "productId": "20005",
+  "productName": "Category3",
+  "price": "200$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-3.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "Category",
+  "productDesc": "Solid Cotton Relaxed Fit Women's Mini Dress"
+}
+==========================13====Home Category=========
+{
+  "productId": "20006",
+  "productName": "Category4",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-4.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "Category",
+  "productDesc": "Ladies Skin Pant"
+}
+======================14==========Hoem Category=====
+{
+  "productId": "20007",
+  "productName": "Category5",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-5.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "HomeCategory",
+  "productDesc": "Ladies Skin Pant"
+}
+=======================15===========Home Category=========
+{
+  "productId": "20008",
+  "productName": "Category6",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-6.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "HomeCategory",
+  "productDesc": "Ladies Skin Pant"
+}
+====================16=================
+{
+  "productId": "20009",
+  "productName": "Category7",
+  "price": "90$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-7.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "HomeCategory",
+  "productDesc": "Ladies Skin Pant Category"
+}
+===========================17=========Home category============
+{
+  "productId": "200010",
+  "productName": "Category8",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/homecategory/category-8.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "default",
+  "productType": "HomeCategory",
+  "productDesc": "Ladies Skin Pant"
+}
+==============================18=================== Featured Products==============================================================================
+
+{
+  "productId": "30001",
+  "productName": "Solid Cotton Linen Blend Mandarin Women's Top",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-8.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Featured",
+  "productType": "Tops",
+  "productDesc": "And stemmed out of the realization that the modern indian woman didn�t have too many contemporary silhouettes to choose from. Bridging this gap ever since, today and has garnered the recognition of a brand that makes global styles for the contemporary woman, understanding the sensibilities of fashion, comfort, quality, and style effortlessly. Often appealing and catering to a sect that is progressive, ambitious, and live a wholesome life; the label is ever-involving while keeping itself aligned with the needs of the urban indian woman."
+}
+========================8========Women==========
+{
+  "productId": "30002",
+  "productName": "Printed Rayon Mandarin Women's Kurta",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-10.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Featured",
+  "productType": "Kurtas",
+  "productDesc": "Stop calf length printed a line kurta with 3/4th sleeves and mandarin collar for casual wear."
+}
+========================9============Women======
+{
+  "productId": "30003",
+  "productName": "Solid Cotton Round Neck Women's Oversized T-Shirt",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-9.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "Featured",
+  "productType": "T-Shirts",
+  "productDesc": "This Oversized T-Shirt from DIFFERENCE OF OPINION is a great way to look stylish as ever. It can be paired with denim to have a complete look."
+}
+
+{
+  "productId": "30004",
+  "productName": "Printed Cotton Regular Fit Boys Track Pants",
+  "price": "150$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-5.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello"
+  ],
+  "category": "Featured",
+  "productType": "Track Pants",
+  "productDesc": "Olive green, regular fit, cotton track pants by Life. These bottoms have an elastic waistband, drawstring closure, pockets, and a camo print all over the fabric."
+}
+
+======================================================= RECENT PRODUCTS ===================================================================
+
+{
+  "productId": "40001",
+  "productName": "Printed Cotton Regular Fit Boys Track Pants",
+  "price": "150$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-5.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello"
+  ],
+  "category": "RecentProducts",
+  "productType": "Track Pants",
+  "productDesc": "Olive green, regular fit, cotton track pants by Life. These bottoms have an elastic waistband, drawstring closure, pockets, and a camo print all over the fabric."
+}
+
+"productId": "40002",
+  "productName": "Floral Polyester Round Neck Women's Top",
+  "price": "10$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-7.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "RecentProducts",
+  "productType": "Tops",
+  "productDesc": "AND stemmed out of the realization that the modern Indian woman didnt have too many contemporary silhouettes to choose from. Bridging this gap ever since, today AND has garnered the recognition of a brand that makes global styles for the contemporary woman, understanding the sensibilities of fashion, comfort, quality, and style effortlessly. Often appealing and catering to a sect that is progressive, ambitious, and live a wholesome life; the label is ever-involving while keeping itself aligned with the needs of the urban Indian woman."
+}
+
+{
+  "productId": "40003",
+  "productName": "Solid Cotton Linen Blend Mandarin Women's Top",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-1.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Black",
+    "Pink"
+  ],
+  "category": "RecentProducts",
+  "productType": "RecentProducts",
+  "productDesc": "Ladies Skin Pant for adults."
+}
+
+{
+  "productId": "40014",
+  "productName": "Solid Cotton Round Neck Women's Oversized T-Shirt",
+  "price": "100$",
+  "imageURL":"https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/products/product-9.jpg",
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "colors": [
+    "Red",
+    "Yello",
+    "Pink"
+  ],
+  "category": "RecentProducts",
+  "productType": "T-Shirts",
+  "productDesc": "This Oversized T-Shirt from DIFFERENCE OF OPINION is a great way to look stylish as ever. It can be paired with denim to have a complete look."
+}

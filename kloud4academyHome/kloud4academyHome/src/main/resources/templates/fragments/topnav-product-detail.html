@@ -1,0 +1,68 @@
+<div class="nav" th:fragment="topnav" xmlns:th="http://www.w3.org/1999/xhtml">
+            <div class="container-fluid">
+                <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+                    <a href="#" class="navbar-brand">MENU</a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto">
+                            <a th:href="@{/home}" class="nav-item nav-link active">Home</a>
+                             <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Categories</a>
+                                <div class="dropdown-menu">
+                                    <a th:href="@{productlist/Women}" class="nav-item nav-link">Women</a>
+                                    <a th:href="@{productlist/Men}" class="nav-item nav-link">Men</a>
+                                    <a th:href="@{productlist/Kids}" class="nav-item nav-link">Kids</a>
+                                </div>
+                       			</div>
+                            <a href="cart.html" class="nav-item nav-link">Cart</a>
+                            <a href="checkout.html" class="nav-item nav-link">Checkout</a>
+                            <a href="my-account.html" class="nav-item nav-link">My Account</a>
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">More Pages</a>
+                                <div class="dropdown-menu">
+                                    <a href="wishlist.html" class="dropdown-item">Wishlist</a>
+                                    <a href="contact.html" class="dropdown-item">Contact Us</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <!-- Nav Bar End -->      
+        
+        <!-- Bottom Bar Start -->
+        <div class="bottom-bar">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="logo">
+                            <a th:href="@{/}">
+                            <img src="" th:src="@{https://localhost:8080/img/kloud4academy.jpg}" width="120"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="search">
+                            <input type="text" placeholder="Search">
+                            <button><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="user">
+                            <a href="wishlist.html" class="btn wishlist">
+                                <i class="fa fa-heart"></i>
+                                <span>(0)</span>
+                            </a>
+                            <a href="cart.html" class="btn cart">
+                                <i class="fa fa-shopping-cart"></i>
+                                <span>(0)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

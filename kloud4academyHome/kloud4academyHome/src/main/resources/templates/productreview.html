@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<div class="reviews-submitted" th:each="reviewInfo : ${productReviews.reviews}">
+    <div class="reviewer" th:text="${reviewInfo.name}"></div>
+    <th:block th:if="${#lists.isEmpty(productReviews.reviews)}"> 
+    <div class="ratting">
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+    </div>
+    </th:block>
+    <p th:text="${reviewInfo.reviewComment}"></p>
+</div>
+<div class="reviews-submit">
+<p th:text="${reviewstatus}" style="color:green"></p>
+        <form th:action="@{/productdetail/}+${productInfo.productId}" th:object="${review}" method="post" class="form">
+        <h4>Give your Review:</h4>
+        <div class="ratting">
+            <a><i class="fa fa-star"></i>
+            <a><i class="fa fa-star"></i>
+            <a><i class="fa fa-star"></i>
+            <a><i class="fa fa-star"></i>
+            <a><i class="fa fa-star"></i>
+        </div>
+         <div class="row form">
+             <div class="col-sm-6">
+                 <input type="text" th:field="*{name}" id="name" placeholder="Name" >
+             </div>
+             <div class="col-sm-6">
+                 <input type="text" th:field="*{email}" id="email" placeholder="Email" >
+                  <input type="hidden" th:field="*{productId}" id="email" value="${productId}" >
+             </div>
+             <div class="col-sm-12">
+                 <textarea placeholder="Review" th:field="*{reviewComment}" id="reviewComment" ></textarea>
+                 <p class="alert alert-danger" th:if="${#fields.hasErrors('reviewComment')}" th:errors="*{reviewComment}" />
+             </div>
+             <div class="col-sm-12">
+                 <input type="submit" value="Submit" >
+             </div>
+         </div>
+        </form>
+    </div>

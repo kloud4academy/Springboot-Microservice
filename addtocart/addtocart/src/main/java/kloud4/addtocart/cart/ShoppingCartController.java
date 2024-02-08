@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import jakarta.servlet.http.HttpSession;
 import kloud4.addtocart.model.CartRequest;
 import kloud4.addtocart.model.ShoppingCart;
+import kloud4.addtocart.model.ShoppingCartCount;
 
 @Controller
 public class ShoppingCartController {
@@ -61,7 +62,15 @@ public class ShoppingCartController {
 	@ResponseBody
 	public String viewCart(@PathVariable String cartId) {
 		ShoppingCart shoppingCart = cartService.viewCart(cartId);
-		logger.info("-----------VIEW shopping cart" + shoppingCart.getCartId());
+		logger.info("-----------VIEW shopping cart");
         return gson.toJson(shoppingCart);
+    }
+	
+	@RequestMapping(path="/cart-ms/shopping/loadcartbyshopperid/{shopperId}",method = RequestMethod.GET)
+	@ResponseBody
+	public String loadcartbyshopperid(@PathVariable String shopperId) {
+		ShoppingCart shoppingCart = cartService.loadCartByProfileId(shopperId);
+		ShoppingCartCount shoppingCartCount = cartService.populateShoppingCartCount(shoppingCart);
+        return gson.toJson(shoppingCartCount);
     }
 }

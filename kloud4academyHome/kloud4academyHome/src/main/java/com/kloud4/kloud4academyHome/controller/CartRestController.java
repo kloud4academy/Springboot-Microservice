@@ -21,6 +21,7 @@ import com.kloud4.kloud4academyHome.ClientManager.ClientService;
 import com.kloud4.kloud4academyHome.model.CartUpdate;
 import com.kloud4.kloud4academyHome.model.ShoppingCart;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -40,60 +41,55 @@ public class CartRestController extends BaseRestController{
 		AjaxResponseBody result = new AjaxResponseBody();
 		if (errors.hasErrors()) {
 			logger.error("Error occurred in CartRestController----"+cartData.getQuantity() + cartData.getPrice());
-//            result.setMsg(errors.getAllErrors()
-//                        .stream().map(x -> x.getDefaultMessage())
-//                        .collect(Collectors.joining(",")));
-			result.setMsg("errror");
-			return ResponseEntity.badRequest().body(result);
-            //return errors.getAllErrors().get(0).toString();
+			result.setMsg(errors.getAllErrors().get(0).getDefaultMessage());
+			return ResponseEntity.badRequest().body("Cart validation error: " + errors.getAllErrors().get(0).getDefaultMessage());
+	    } else if ("0".equalsIgnoreCase(cartData.getQuantity())){
+	    	return ResponseEntity.badRequest().body("Cart validation error: please select the quantity!");
 	    }
 		ResponseEntity<String> responseEntity = null;
 		try {
-			
 			responseEntity = clientService.addToCart(cartData,session,response,request);
 		} catch(Exception e) {
 			logger.error("create cart error...."+e.getMessage());
-			e.printStackTrace();
+			result.setMsg("There is addTocart error");
+			return ResponseEntity.badRequest().body("Cart validation backend error please wait for sometime!");
 		}
 		
-//		List<CartData> cartDetails = new ArrayList<CartData>();
-//        if (cartDetails != null && cartDetails.get(0).getQuantity().isEmpty()){
-//            result.setMsg("Backend error while calculating quantity");
-//        } else {
-//        	result.setMsg("success");
-//        }
-//        result.setMsg("success");
-//        result.setResult(cartDetails);
-       // return ResponseEntity.ok(result);
-		logger.info("---------Print cartID::::" +responseEntity.getBody());
 		result.setMsg(responseEntity.getBody());
         return ResponseEntity.ok(ResponseEntity.ok(result));
 	}
 	
 	
 	@RequestMapping(path="/cartdetail/cart/{cartId}",method = RequestMethod.GET)
-	public ModelAndView cartdetail(@PathVariable String cartId,Model model) {
+	public ModelAndView cartdetail(@PathVariable String cartId,Model model,HttpSession session) {
 		CartUpdate cartUpdate = new CartUpdate();
 		logger.info("--------Called Cart controller");
 		ResponseEntity<String> responseEntity = null;
+		ShoppingCart shoppingCart = null;
 		ModelAndView mv = new ModelAndView();
 		try {
 			responseEntity = clientService.viewCart(cartId);
+			shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
+			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
+			session.setAttribute("cartUrl", "/cartdetail/cart/"+cartId);
+			if(shoppingCart != null && shoppingCart.getItems() != null) 
+				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
+			else
+				session.setAttribute("cartSize","0");
 		} catch(Exception e) {
 			logger.error("create cart error...."+e.getMessage());
+			return new ModelAndView("redirect:/productlist/Women");
 		}
-		ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
-		shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
 		mv.addObject("shoppingCart", shoppingCart);
 		model.addAttribute("cartUpdate", cartUpdate);
 		mv.setViewName("cart");
-	    
 		return mv;
 	}
 	
 	@RequestMapping(path="/cartdetail/cart/{cartId}",method = RequestMethod.POST)
 	public ModelAndView cartUpdate(@PathVariable String cartId,CartUpdate cartUpdate, BindingResult result, Model model,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
 		ResponseEntity<String> responseEntity = null;
+		ShoppingCart shoppingCart = null;
 		ModelAndView mv = new ModelAndView();
 		try {
 			CartData cartData = new CartData();
@@ -102,37 +98,59 @@ public class CartRestController extends BaseRestController{
 			cartData.setPrice(cartUpdate.getPrice());
 			cartData.setCartId(cartId);
 			responseEntity = clientService.updateCart(cartData, session, response, request);
+			shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
+			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
+			if(shoppingCart != null && shoppingCart.getItems() != null) 
+				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
+			else
+				session.setAttribute("cartSize","0");
+			mv.addObject("shoppingCart", shoppingCart);
+			mv.setViewName("cart");
 		} catch(Exception e) {
 			logger.error("create cart error...."+e.getMessage());
+			ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
+			return  redirectmv;
 		}
-		ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
-		shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
-		mv.addObject("shoppingCart", shoppingCart);
-		mv.setViewName("cart");
 	    
 		return mv;
 	}
 	
 	@RequestMapping(path="/cartdetail/{productId}/cartdelete/{cartId}",method = RequestMethod.GET)
-	public ModelAndView cartDelete(@PathVariable String cartId,@PathVariable String productId,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
+	public Object cartDelete(@PathVariable String cartId,@PathVariable String productId,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
 		ResponseEntity<String> responseEntity = null;
 		ModelAndView mv = new ModelAndView();
 		try {
+			if(StringUtils.isBlank(productId)) {
+				ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
+				return redirectmv;
+				//viewProductList("Women", redirectmv);
+			}
 			CartData cartData = new CartData();
 			cartData.setQuantity(cartData.getQuantity());
 			cartData.setProductId(cartData.getProductId());
 			cartData.setPrice(cartData.getPrice());
 			cartData.setCartId(cartId);
 			responseEntity = clientService.deleteCart(cartData, session, response, request);
+			logger.info("delete cart response body : "+responseEntity.getBody());
+			logger.info("delete cart response status : "+responseEntity.getStatusCode());
+			ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
+			if((shoppingCart == null) || (shoppingCart.getItems() == null || shoppingCart.getItems().size() == 0)) {
+				logger.info("There are not items in the cart");
+				return new ModelAndView("redirect:/productlist/Women");
+			}
+			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
+			if(shoppingCart != null && shoppingCart.getItems() != null) 
+				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
+			else
+				session.setAttribute("cartSize","0");
+			mv.addObject("shoppingCart", shoppingCart);
+			mv.setViewName("cart");
 		} catch(Exception e) {
 			logger.error("create cart error...."+e.getMessage());
+			ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
+			return  redirectmv;
+			//viewProductList("Women", mv);
 		}
-		logger.info("delete cart response body : "+responseEntity.getBody());
-		logger.info("delete cart response status : "+responseEntity.getStatusCode());
-		ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
-		shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
-		mv.addObject("shoppingCart", shoppingCart);
-		mv.setViewName("cart");
 	    
 		return mv;
 	}

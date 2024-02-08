@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 public class CartData {
 	private String productId;
 	private String price;
+	@NotBlank(message = "quantity can't empty!")
 	private String quantity;
 	@NotBlank(message = "size can't empty!")
 	private String size;
+	@NotBlank(message = "color can't empty!")
 	private String color;
 	private String cartId;
 }

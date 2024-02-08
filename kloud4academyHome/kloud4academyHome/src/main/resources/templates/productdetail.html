@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <div th:replace="fragments/header :: header"></div>
-  <div th:replace="fragments/topnav-product-detail"></div>
+  <div th:replace="fragments/topnav-product-detail">
+  </div>
         <!-- Breadcrumb Start -->
         <div class="breadcrumb-wrap">
             <div class="container-fluid">
@@ -12,9 +13,11 @@
                 </ul>
             </div>
         </div>
+        
         <!-- Breadcrumb End -->
         <span th:if="${apiError == 'true'}" style="color:red"><br><br>CircuitBreak is on please wait will be back in few seconds......</span>
         <!-- Product Detail Start -->
+        <span th:if="${searchError != null}" style="color:red;align:center" th:text="${searchError}"></span>
         <th:block th:if="${error.empty}">  
 		        <div class="product-detail">
 		            <div class="container-fluid">
@@ -53,10 +56,10 @@
 		                                            <i class="fa fa-star"></i>
 		                                            <i class="fa fa-star"></i>
 		                                        </div>
-		                                        <div id="feedback"></div>
+		                                        <div id="feedback" style="color:#FF0000;"></div>
 		                                        <div class="price">
 		                                            <h4>Price:</h4>
-		                                            <p th:text="${productInfo.price}"></p>
+		                                            <h3>$<p th:text="${productInfo.price}"></p></h3>
 		                                            <input type="hidden" id="productPrice" th:value="${productInfo.price}"/>
 		                                        </div>
 		                                         <div class="p-size">

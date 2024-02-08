@@ -74,9 +74,7 @@ function fire_ajax_submit() {
                   window.location.href = '/cartdetail/cart/'+data.body.msg;
                 },
                 error: function (e) {
-                alert(e);
-                 var json = "<h4>Ajax Error Response</h4>"+ e.responseText;
-                 $('#feedback').html(json);
+                 $('#feedback').html(e.responseText);
             		console.log("ERROR : ", e);
         		}
             });

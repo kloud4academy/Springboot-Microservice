@@ -24,6 +24,9 @@ import com.kloud4.kloud4academyHome.controller.BaseRestController;
 import bo.ProductInfo;
 import bo.ProductReviewRequest;
 import bo.Review;
+import bo.SearchRequest;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -40,10 +43,16 @@ public class ProductsRestController extends BaseRestController {
 	Gson gson;
 	
 	@RequestMapping(value={"/productlist/{categoryId}", "/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}"},method = RequestMethod.GET)
-	public ModelAndView productList(@PathVariable String categoryId) {
-		logger.info("-------Getting called controller----"+categoryId);
+	public ModelAndView productList(@PathVariable String categoryId,HttpSession session) {
+		logger.info("-------Getting called controller---->>"+session.getAttribute("cartUrl"));
 		ModelAndView mv = new ModelAndView();
 	    ResponseEntity<String> responseEntity;
+	    String cartSize = "0";
+    	if(session.getAttribute("cartUrl") != null) {
+    		mv.addObject("cartUrl", session.getAttribute("cartUrl"));
+    		cartSize = (String) session.getAttribute("cartSize");
+    		mv.addObject("cartSize", cartSize);
+    	}
 		try {
 			responseEntity = clientService.fetchProductsUsingCategory(categoryId);
 		    if(responseEntity != null) {
@@ -69,12 +78,18 @@ public class ProductsRestController extends BaseRestController {
 	}
 	
 	@RequestMapping(path="/productdetail/{productId}",method = RequestMethod.GET)
-	public ModelAndView fetchProductUsingProductId(@PathVariable String productId, Model model) {
+	public ModelAndView fetchProductUsingProductId(@PathVariable String productId, Model model,HttpSession session) {
 		Review review = new Review();
 		review.setProductId(productId);
 		ModelAndView mv = new ModelAndView();
 	    ResponseEntity<String> responseEntity = null;
 	    String responseString = "";
+	    String cartSize = "0";
+    	if(session.getAttribute("cartUrl") != null) {
+    		mv.addObject("cartUrl", session.getAttribute("cartUrl"));
+    		cartSize = (String) session.getAttribute("cartSize");
+    		mv.addObject("cartSize", cartSize);
+    	}
 		try {
 			try {
 				if(redisCacheTemplate.hasKey(productId)) {
@@ -96,6 +111,7 @@ public class ProductsRestController extends BaseRestController {
 					}
 				}
 			} 
+			
 		    if(responseEntity != null || responseString != null) {
 		    	if(checkCircuitBreaker(responseEntity, responseString)) {
 		    		mv.addObject("apiError", "true");
@@ -124,9 +140,16 @@ public class ProductsRestController extends BaseRestController {
 	
 	
 	@RequestMapping(value="/productdetail/{productId}",method=RequestMethod.POST)
-	public ModelAndView submitreview(@PathVariable String productId,@Valid Review review, BindingResult result, Model model) {
+	public ModelAndView submitreview(@PathVariable String productId,@Valid Review review, BindingResult result, Model model,HttpSession session) {
 		 logger.info("---------Display review "+productId);
+		
 		 ModelAndView mv = new ModelAndView();
+		 String cartSize = "0";
+    	 if(session.getAttribute("cartUrl") != null) {
+    		mv.addObject("cartUrl", session.getAttribute("cartUrl"));
+    		cartSize = (String) session.getAttribute("cartSize");
+    		mv.addObject("cartSize", cartSize);
+    	 }
 	     mv.addObject("error", "");
 	     ProductInfo productInfo = null;
 	     try {
@@ -159,5 +182,41 @@ public class ProductsRestController extends BaseRestController {
 		reviewList.add(review);
 		productReviewRequest.setReviews(reviewList);
 		return clientService.sendProductReview(productReviewRequest);
+	}
+	
+	@RequestMapping(value="/productlist/searchproduct",method = RequestMethod.POST)
+	public ModelAndView searchproduct(SearchRequest searchRequest) {
+		logger.info("-------Getting called searchproduct controller---->>"+searchRequest.getSearchString());
+		ModelAndView mv = new ModelAndView();
+	    ResponseEntity<String> responseEntity = null;;
+		try {
+			if(searchRequest != null && !StringUtils.isBlank(searchRequest.getSearchString())) {
+				responseEntity = clientService.searchProduct(searchRequest.getSearchString());
+			} else {
+				mv.addObject("searchError", "There are no products found");
+				mv.addObject("error", "true");
+				mv.setViewName("productlist");
+			}
+		    if(responseEntity != null) {
+		    	if(checkCircuitBreaker(responseEntity)) {
+		    		//TODO No need to enable now only for demo
+		    		mv.addObject("apiError", "false");
+		    		mv.addObject("error", "true");
+					mv.setViewName("productlist");
+					return mv;
+		    	}
+		    	ProductInfo[] productInfoList = gson.fromJson(responseEntity.getBody(), ProductInfo[].class);
+		    	mv.addObject("productResponse", productInfoList);
+		    	mv.addObject("error", "");
+				mv.setViewName("productlist");
+			}
+		} catch (Exception e) {
+			logger.info("-------Products search error in productlist ----");
+			mv.addObject("productResponse", "No Products Found");
+			mv.addObject("error", "true");
+			mv.setViewName("productlist");
+		}
+	    
+		return mv;
 	}
 }

@@ -17,6 +17,7 @@ import io.micrometer.common.util.StringUtils;
 import kloud4.addtocart.model.CartRequest;
 import kloud4.addtocart.model.Item;
 import kloud4.addtocart.model.ShoppingCart;
+import kloud4.addtocart.model.ShoppingCartCount;
 import kloud4.addtocart.repository.CartRepository;
 import kloud4.addtocart.utils.Klou4RandomUtils;
 
@@ -208,5 +209,15 @@ public class CartService {
 			logger.info("------------Cart Jsessionid cookie: ");
 		}
 		return shoppingCart;
+	}
+	
+	public ShoppingCartCount populateShoppingCartCount(ShoppingCart shoppingCart) {
+		ShoppingCartCount shoppingCartCount = new ShoppingCartCount();
+		shoppingCartCount.setCartId(shoppingCart.getCartId());
+		if(shoppingCart != null && shoppingCart.getItems() != null) {
+			shoppingCartCount.setCartSize(String.valueOf(shoppingCart.getItems().size()));
+		}
+		
+		return shoppingCartCount;
 	}
 }

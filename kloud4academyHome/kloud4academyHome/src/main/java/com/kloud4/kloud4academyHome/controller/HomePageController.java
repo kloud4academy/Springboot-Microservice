@@ -12,6 +12,9 @@ import com.google.gson.Gson;
 import com.kloud4.kloud4academyHome.ClientManager.ClientService;
 
 import bo.ProductInfo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class HomePageController extends BaseRestController {
@@ -24,12 +27,19 @@ public class HomePageController extends BaseRestController {
 	Gson gson;
 	
 	@GetMapping({"/home","/"})
-	public ModelAndView showHomePage() {
+	public ModelAndView showHomePage(HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ResponseEntity<String> responseEntity;
 		ResponseEntity<String> recentResponseEntity;
 		ModelAndView mv = new ModelAndView();
+		String cartSize = "0";
+		String cartUrl = "";
+	   	if(session.getAttribute("cartUrl") != null) {
+	   		cartUrl = (String) session.getAttribute("cartUrl");
+	   		mv.addObject("cartUrl", cartUrl);
+	   		cartSize = (String) session.getAttribute("cartSize");
+	   		mv.addObject("cartSize", cartSize);
+	   	}
 		try {
-			logger.info("-------coming inside--fetchProductsUsingCategory-------");
 			responseEntity = clientService.fetchProductsUsingCategory("Featured");
 			if(super.checkCircuitBreaker(responseEntity)) {
 	    		mv.addObject("apiError", "true");
@@ -38,6 +48,7 @@ public class HomePageController extends BaseRestController {
 				return mv;
 	    	}
 			recentResponseEntity = clientService.fetchProductsUsingCategory("RecentProducts");
+			clientService.checkandReloadCartCount(session, cartUrl, response, request);
 		    if(responseEntity != null) {
 		    	ProductInfo[] productInfoList = gson.fromJson(responseEntity.getBody(), ProductInfo[].class);
 		    	mv.addObject("featureProducts", productInfoList);
@@ -49,6 +60,7 @@ public class HomePageController extends BaseRestController {
 		    	mv.addObject("error", "");
 		    }
 		    mv.setViewName("homepage");
+		    
 		} catch(Exception e) {
 			logger.info("-------Products fetching error ----"+e.getMessage());
 			mv.addObject("error", "true");

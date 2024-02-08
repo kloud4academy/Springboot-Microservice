@@ -41,6 +41,7 @@ import com.kloud4.kloud4academyHome.model.ShoppingCart;
 import bo.ProductInfo;
 import bo.ProductReviewRequest;
 import bo.SendCartRequest;
+import bo.ShoppingCartCount;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
@@ -201,24 +202,6 @@ public class ClientService {
 		return response;
 	}
 	
-	private ResponseEntity<String> fallbackCreateCartAPIError(SendCartRequest sendCartRequest,Exception e) {
-		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
-		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
-	} 
-	
-	private ResponseEntity<String> fallbackViewCartAPIError(String cartId,Exception e) {
-		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
-		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
-	} 
-	private ResponseEntity<String> fallbackUpdateCartAPIError(CartData shoppingCart,Exception e) {
-		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
-		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
-	} 
-	private ResponseEntity<String> fallbackDeleteCartAPIError(CartData cartData,Exception e) {
-		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
-		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
-	} 
-	
 	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbackViewCartAPIError")
 	@Retry(name="kloud4breaker")
 	public ResponseEntity<String> viewCart(String cartId) throws Exception {
@@ -236,8 +219,30 @@ public class ClientService {
 				}
 			}
 		}
-		logger.info("-------ProductId parameter----"+cartId);
+		logger.info("-------ProductId parameter-in View Cart---"+cartId);
 		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8082/cart-ms/shopping/viewCart" + "/"+cartId, String.class);
+		return response;
+	}
+	
+	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbackViewCartAPIError")
+	@Retry(name="kloud4breaker")
+	public ResponseEntity<String> loadCartByShopperId(String shopperId) throws Exception {
+		List servicesList  = discoveryClient.getServices();
+		logger.info("-------servicesList----"+servicesList);
+		
+		if(servicesList != null && servicesList.contains("cartmicroservice")) {
+			for (Object service : servicesList) {
+				if("cartmicroservice".equalsIgnoreCase(service.toString())) {
+					String productApiUrl = "https://" +service+ ":" + "8082" + "/cart-ms/shopping/loadcartbyshopperid";
+					logger.info("-------productApiUrl----"+productApiUrl);
+					ResponseEntity<String> response = restTemplate().getForEntity(productApiUrl + "/"+shopperId, String.class);
+					logger.info("----Print Response Object for fetchProductReviews "+response);
+					return response;
+				}
+			}
+		}
+		logger.info("-------ProductId parameter-in load Cart---"+shopperId);
+		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8082/cart-ms/shopping/loadcartbyshopperid" + "/"+shopperId, String.class);
 		return response;
 	}
 	
@@ -357,4 +362,70 @@ public class ClientService {
 		ResponseEntity<String> cartresponse = restTemplate().exchange("https://localhost:8082/cart-ms/shopping/deleteCart", HttpMethod.POST, entity, String.class);
 		return cartresponse;
 	}
+	
+	public void checkandReloadCartCount(HttpSession session,String cartUrl,HttpServletResponse response, HttpServletRequest request) {
+		String shopperProfileId = "";
+		if(StringUtils.isEmpty(cartUrl) && WebUtils.getCookie(request, "cartcookie") != null) {
+			shopperProfileId = WebUtils.getCookie(request, "cartcookie").getValue();
+		}
+		if(!StringUtils.isEmpty(shopperProfileId)) {
+			try {
+				ResponseEntity<String> responseEntity = loadCartByShopperId(shopperProfileId);
+				ShoppingCartCount shoppingCartCount = gson.fromJson(responseEntity.getBody(), ShoppingCartCount.class);
+				if(shoppingCartCount != null && shoppingCartCount.getCartId() != null) {
+					session.setAttribute("cartUrl", "/cartdetail/cart/"+shoppingCartCount.getCartId());
+					session.setAttribute("cartSize", String.valueOf(shoppingCartCount.getCartSize()));
+				}
+			} catch (Exception e) {
+				logger.error("Error occurred during loadcart by shoppperid ");
+			}
+		}
+	}
+	
+	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbacksearchAPIError")
+	@Retry(name="kloud4breaker")
+	public ResponseEntity<String> searchProduct(String searchString) throws Exception {
+		List servicesList  = discoveryClient.getServices();
+		logger.info("-------servicesList----"+servicesList);
+		HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+	    HttpEntity<String> entity = new  HttpEntity<String>(searchString,headers);
+		if(servicesList != null && servicesList.contains("searchmicroservice")) {
+			for (Object service : servicesList) {
+				if("searchmicroservice".equalsIgnoreCase(service.toString())) {
+					String productApiUrl = "https://" +service+ ":" + "8083" + "/search-ms/shopping/searchproduct";
+					logger.info("-------productApiUrl----"+productApiUrl);
+					ResponseEntity<String> response = restTemplate().exchange(productApiUrl, HttpMethod.POST, entity, String.class);
+					logger.info("----Print Response Object for searchproduct "+response);
+					return response;
+				}
+			}
+		}
+		ResponseEntity<String> response = restTemplate().exchange("https://localhost:8083/search-ms/shopping/searchproduct", HttpMethod.POST, entity, String.class);
+		return response;
+	}
+	
+	private ResponseEntity<String> fallbacksearchAPIError(String searchString,Exception e) {
+		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
+		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
+	} 
+	
+	private ResponseEntity<String> fallbacksearchAPIError(SendCartRequest sendCartRequest,Exception e) {
+		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
+		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
+	} 
+	
+	private ResponseEntity<String> fallbackViewCartAPIError(String cartId,Exception e) {
+		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
+		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
+	} 
+	private ResponseEntity<String> fallbackUpdateCartAPIError(CartData shoppingCart,Exception e) {
+		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
+		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
+	} 
+	private ResponseEntity<String> fallbackDeleteCartAPIError(CartData cartData,HttpSession session, HttpServletResponse response, HttpServletRequest request,Exception e) {
+		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
+		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
+	} 
 }

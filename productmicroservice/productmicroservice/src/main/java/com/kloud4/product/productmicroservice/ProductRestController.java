@@ -40,7 +40,6 @@ public class ProductRestController{
 	@RequestMapping(path="/nt-ms/fetchProduct/{productId}")
 	@ResponseBody
 	public String fetchProduct(@PathVariable String productId) throws MongoDbException, ProductNotFoundException {
-		logger.info("------fetchproduct controller"+productId);
 		Product productsData = apiServiceManager.fetchProduct(productId);
 		return gson.toJson(productsData);
 	}
@@ -49,7 +48,6 @@ public class ProductRestController{
             produces = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.POST)
 	@ResponseBody
 	public String sendProductReviews(@RequestBody ProductReviewRequest productReview) throws MongoDbException {
-		logger.info("-----sendProductReviews controller"+productReview);
 		String response = apiServiceManager.saveProductReview(productReview);
 		return response;
 	}
@@ -57,7 +55,6 @@ public class ProductRestController{
 	@RequestMapping(path="/nt-ms/fetchProductReviews/{productId}")
 	@ResponseBody
 	public String fetchProductReviews(@PathVariable String productId) {
-		logger.info("------fetchProductReviews controller"+productId);
 		ProductReviews productReviews = apiServiceManager.fetchProductReviews(productId);
 		if(productReviews != null)
 			return gson.toJson(productReviews);

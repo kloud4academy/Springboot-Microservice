@@ -3,7 +3,6 @@
 <div th:replace="fragments/header :: header"></div>
   <div th:replace="fragments/topnav-product"></div>
         <!-- Bottom Bar End -->  
-        
         <!-- Breadcrumb Start -->
         <div class="breadcrumb-wrap">
             <div class="container-fluid">
@@ -65,6 +64,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <span th:if="${searchError != null}" style="color:red;align:center" th:text="${searchError}"></span>
 							<th:block th:if="${error == 'false'}"> 
 							<span>No Products Found</span> 
 							</th:block>   
@@ -93,7 +93,8 @@
 	                                        </div>
 	                                    </div>
 	                                    <div class="product-price">
-	                                        <h3><span th:text="${productInfo.price}"></h3>
+	                                         <p>$99 <span th:text="${productInfo.price}"></span></p>
+	                                         <h3><span>$</span><span th:text="${productInfo.price}"></span></h3>
 	                                        <a class="btn" th:href="@{/productdetail/}+${productInfo.productId}"><i class="fa fa-shopping-cart"></i>Buy Now</a>
 	                                    </div>
 	                                </div>

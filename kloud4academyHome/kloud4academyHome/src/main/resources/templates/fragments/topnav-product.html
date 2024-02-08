@@ -17,7 +17,7 @@
                                     <a th:href="@{Kids}" class="nav-item nav-link">Kids</a>
                                 </div>
                        			</div>
-                            <a href="cart.html" class="nav-item nav-link">Cart</a>
+                            <a th:href="${cartUrl}" class="nav-item nav-link">Cart</a>
                             <a href="checkout.html" class="nav-item nav-link">Checkout</a>
                             <a href="my-account.html" class="nav-item nav-link">My Account</a>
                             <div class="nav-item dropdown">
@@ -46,10 +46,12 @@
                         </div>
                     </div>
                     <div class="col-md-6">
+                       <form th:action="@{/productlist/searchproduct}" th:object="${searchRequest}" method="post">
                         <div class="search">
-                            <input type="text" placeholder="Search">
-                            <button><i class="fa fa-search"></i></button>
+                            <input type="text" name='searchString' id="searchString" placeholder="Search"/>
+                            <button type="submit" ><i class="fa fa-search"></i></button>
                         </div>
+                     </form>
                     </div>
                     <div class="col-md-3">
                         <div class="user">
@@ -57,9 +59,14 @@
                                 <i class="fa fa-heart"></i>
                                 <span>(0)</span>
                             </a>
-                            <a href="cart.html" class="btn cart">
+                            <a  th:href="${cartUrl}" class="btn cart">
                                 <i class="fa fa-shopping-cart"></i>
+                                <span th:if="${cartSize != null}">
+                                (<span th:text="${cartSize}"></span>)
+                            	</span>
+                            	<span th:if="${cartSize == null}">
                                 <span>(0)</span>
+                            	</span>
                             </a>
                         </div>
                     </div>

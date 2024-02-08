@@ -37,7 +37,6 @@ public class ServiceManager {
 		List<Product> productList = null;
 		try {
 			productList = productRepository.findAll(category);
-			logger.info("--------Passed productList---"+productList);
 		} catch (Exception e) {
 			logger.error("Exception occurred during product fetching in mongodb in fetchProductsByCategory");
 		}
@@ -51,7 +50,6 @@ public class ServiceManager {
 	public Product fetchProduct(String productId) throws MongoDbException,ProductNotFoundException {
 		Product product = null;
 		try {
-			logger.info("--------Product data---");
 			product = productRepository.findAllById(productId);
 			logger.info("--------Product data-product--"+product);
 			if(product == null) throw new ProductNotFoundException(productId);
@@ -97,7 +95,6 @@ public class ServiceManager {
 	
 	public ProductReviews fetchProductReviews(String productId) {
 		try {
-			logger.info("========Product reviews: Service"+ productId);
 			return productReviewRepository.findAllById(productId);
 		} catch (Exception e) {
 			logger.error("MongoDB error occurred during fetching reviews");

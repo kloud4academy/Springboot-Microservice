@@ -25,46 +25,32 @@
                                 <div class="product-view-top">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div class="product-search">
-                                                <input type="email" value="Search">
-                                                <button><i class="fa fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
                                             <div class="product-short">
-                                                <div class="dropdown">
-                                                    <div class="dropdown-toggle" data-toggle="dropdown">Product short by</div>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a href="#" class="dropdown-item">Newest</a>
-                                                        <a href="#" class="dropdown-item">Popular</a>
-                                                        <a href="#" class="dropdown-item">Most sale</a>
-                                                    </div>
-                                                </div>
+                                            <form th:action="@{/productfilter/colorfilter}" th:object="${filterBean}" method="post" id="colorfilterForm" class="form">
+                                                     <div class="dropdown">
+                                                    <select th:field="*{selectedColor}" id="selectedColor" name="selectedColor" class="dropdown-toggle" data-toggle="dropdown">
+													    <option value="0">Product short by</option>
+													    <option th:each="option : ${colorList}" th:value="${option}" th:text="${option}"></option>
+													</select>
+													</div>
+                                                </form>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="product-price-range">
-                                                <div class="dropdown">
-                                                    <div class="dropdown-toggle" data-toggle="dropdown">Product price range</div>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a href="#" class="dropdown-item">$0 to $50</a>
-                                                        <a href="#" class="dropdown-item">$51 to $100</a>
-                                                        <a href="#" class="dropdown-item">$101 to $150</a>
-                                                        <a href="#" class="dropdown-item">$151 to $200</a>
-                                                        <a href="#" class="dropdown-item">$201 to $250</a>
-                                                        <a href="#" class="dropdown-item">$251 to $300</a>
-                                                        <a href="#" class="dropdown-item">$301 to $350</a>
-                                                        <a href="#" class="dropdown-item">$351 to $400</a>
-                                                        <a href="#" class="dropdown-item">$401 to $450</a>
-                                                        <a href="#" class="dropdown-item">$451 to $500</a>
-                                                    </div>
-                                                </div>
+                                             <form th:action="@{/productfilter/pricefilter}" method="post" th:object="${filterBean}" class="form" id="pricefilterForm" name="pricefilterForm">
+                                                     <div class="dropdown">
+                                                    <select th:field="*{selectedPrice}" id="selectedPrice" name="selectedPrice" class="dropdown-toggle" data-toggle="dropdown">
+                                                         <option value="0">Product price range</option>
+													     <option th:each="priceMap: ${priceRangeMap}" th:value="${priceMap.key}" th:text="${priceMap.value}"></option>
+													</select>
+													</div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <span th:if="${searchError != null}" style="color:red;align:center" th:text="${searchError}"></span>
 							<th:block th:if="${error == 'false'}"> 
 							<span>No Products Found</span> 
 							</th:block>   
@@ -95,7 +81,7 @@
 	                                    <div class="product-price">
 	                                         <p>$99 <span th:text="${productInfo.price}"></span></p>
 	                                         <h3><span>$</span><span th:text="${productInfo.price}"></span></h3>
-	                                        <a class="btn" th:href="@{/productdetail/}+${productInfo.productId}"><i class="fa fa-shopping-cart"></i>Buy Now</a>
+	                                        <a class="btn" th:href="${'/productdetail/' + {productInfo.productId}}"><i class="fa fa-shopping-cart"></i>Buy Now</a>
 	                                    </div>
 	                                </div>
 	                            </div>
@@ -142,4 +128,17 @@
         <script type="text/javascript" th:src="@{/lib/slick/slick.min.js}"></script>
         <!-- Template Javascript -->
         <script type="text/javascript" th:src="@{/js/main.js}"></script>
+        <script>
+        $(function() {
+ 		   $('#selectedColor').on('change', function(e) {
+ 		      $('#colorfilterForm').submit();
+ 		   });
+ 		});
+        $(function() {
+  		   $('#selectedPrice').on('change', function(e) {
+  		      $('#pricefilterForm').submit();
+  		   });
+  		});
+        
+        </script>
 </html>

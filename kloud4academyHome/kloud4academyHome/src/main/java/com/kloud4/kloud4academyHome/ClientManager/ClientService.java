@@ -40,6 +40,7 @@ import com.kloud4.kloud4academyHome.model.ShoppingCart;
 
 import bo.ProductInfo;
 import bo.ProductReviewRequest;
+import bo.ProductSearchRequest;
 import bo.SendCartRequest;
 import bo.ShoppingCartCount;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -405,6 +406,35 @@ public class ClientService {
 		ResponseEntity<String> response = restTemplate().exchange("https://localhost:8083/search-ms/shopping/searchproduct", HttpMethod.POST, entity, String.class);
 		return response;
 	}
+	
+	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbacksearchFilterAPIError")
+	@Retry(name="kloud4breaker")
+	public ResponseEntity<String> filterProducts(ProductSearchRequest productSearchRequest,String endpointURL) throws Exception {
+		List servicesList  = discoveryClient.getServices();
+		logger.info("-------servicesList----"+servicesList);
+		HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+	    HttpEntity<ProductSearchRequest> entity = new  HttpEntity<ProductSearchRequest>(productSearchRequest,headers);
+		if(servicesList != null && servicesList.contains("searchmicroservice")) {
+			for (Object service : servicesList) {
+				if("searchmicroservice".equalsIgnoreCase(service.toString())) {
+					String productApiUrl = "https://" +service+ ":" + "8083" + endpointURL;
+					logger.info("-------productApiUrl----"+productApiUrl);
+					ResponseEntity<String> response = restTemplate().exchange(productApiUrl, HttpMethod.POST, entity, String.class);
+					logger.info("----Print Response Object for searchproduct "+response);
+					return response;
+				}
+			}
+		}
+		ResponseEntity<String> response = restTemplate().exchange(endpointURL, HttpMethod.POST, entity, String.class);
+		return response;
+	}
+	
+	private ResponseEntity<String> fallbacksearchFilterAPIError(ProductSearchRequest productSearchRequest,Exception e) {
+		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
+		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
+	} 
 	
 	private ResponseEntity<String> fallbacksearchAPIError(String searchString,Exception e) {
 		logger.info("--------fallbackCartAPIError called circuitbreaker started....");

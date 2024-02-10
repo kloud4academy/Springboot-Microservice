@@ -17,7 +17,6 @@
         <!-- Breadcrumb End -->
         <span th:if="${apiError == 'true'}" style="color:red"><br><br>CircuitBreak is on please wait will be back in few seconds......</span>
         <!-- Product Detail Start -->
-        <span th:if="${searchError != null}" style="color:red;align:center" th:text="${searchError}"></span>
         <th:block th:if="${error.empty}">  
 		        <div class="product-detail">
 		            <div class="container-fluid">

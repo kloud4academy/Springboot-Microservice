@@ -1,4 +1,4 @@
-package klou4search.search.model;
+package bo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

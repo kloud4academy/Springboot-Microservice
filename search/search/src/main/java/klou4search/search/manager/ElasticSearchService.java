@@ -11,6 +11,9 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
@@ -28,8 +31,8 @@ public class ElasticSearchService {
 	ElasticsearchOperations elasticSearchOperations;
 	@Autowired
 	ElasticsearchClient elasticSearchClient;
+	
 	public List<Product> searchProducts(String searchString) {
-		
 		List<org.springframework.data.elasticsearch.core.SearchHit<Product>> productList = null;
 		if(searchString != null) {
 			List<String >fields = List.of("productName", "productDesc","sizes","colors","category"); 
@@ -50,7 +53,48 @@ public class ElasticSearchService {
 					return productMatchsList;
 				}
 			} catch (Exception e) {
-				logger.error("super errror"+e.getMessage());
+				logger.error("searchProducts errror"+e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+	public List<Product> searchProductRanges(ProductSearchRequest productSearchRequest) {
+		if(productSearchRequest != null) {
+			logger.info("Not productSearchRequest.getPriceTo() " + productSearchRequest.getPriceTo());
+			logger.info("Not wokirnds " + productSearchRequest.getPriceFrom());
+			Criteria criteria = new Criteria("price").greaterThanEqual(productSearchRequest.getPriceFrom()).lessThan(productSearchRequest.getPriceTo());
+			Query query = new CriteriaQuery(criteria);
+			try {
+				SearchHits<Product> searchHits = elasticSearchOperations.search(query, Product.class);
+				if(searchHits != null && !searchHits.isEmpty()) {
+					List<Product> productMatchsList = new ArrayList<Product>();
+					searchHits.forEach(productSearchHit->{
+						productMatchsList.add(productSearchHit.getContent());
+					});
+					return productMatchsList;
+				}
+			} catch (Exception e) {
+				logger.error("searchProductRanges errror"+e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+	public List<Product> searchProductSort(ProductSearchRequest productSearchRequest) {
+		if(productSearchRequest != null && productSearchRequest.getSortType() != null) {
+			try {
+				Query query = NativeQuery.builder().withQuery(q -> q.match(m -> m.field(productSearchRequest.getSortType()).query(productSearchRequest.getSortByString()))).build();
+				SearchHits<Product> searchHits = elasticSearchOperations.search(query, Product.class);
+				if(searchHits != null && !searchHits.isEmpty()) {
+					List<Product> productMatchsList = new ArrayList<Product>();
+					searchHits.forEach(productSearchHit->{
+						productMatchsList.add(productSearchHit.getContent());
+					});
+					return productMatchsList;
+				}
+			} catch (Exception e) {
+				logger.error("searchProductSort errror"+e.getMessage());
 			}
 		}
 		return null;

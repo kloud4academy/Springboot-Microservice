@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.kloud4.kloud4academyHome.ClientManager.ClientService;
 
 import bo.ProductInfo;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -33,12 +34,16 @@ public class HomePageController extends BaseRestController {
 		ModelAndView mv = new ModelAndView();
 		String cartSize = "0";
 		String cartUrl = "";
-	   	if(session.getAttribute("cartUrl") != null) {
-	   		cartUrl = (String) session.getAttribute("cartUrl");
-	   		mv.addObject("cartUrl", cartUrl);
-	   		cartSize = (String) session.getAttribute("cartSize");
-	   		mv.addObject("cartSize", cartSize);
-	   	}
+   		cartUrl = (String) session.getAttribute("cartUrl");
+   		if(StringUtils.isBlank(cartUrl)) {
+   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
+   			cartUrl = (String) session.getAttribute("cartUrl");
+   			cartSize = (String) session.getAttribute("cartSize");
+   		} else {
+   			cartSize = (String) session.getAttribute("cartSize");
+   		}
+   		mv.addObject("cartUrl", cartUrl);
+   		mv.addObject("cartSize", cartSize);
 		try {
 			responseEntity = clientService.fetchProductsUsingCategory("Featured");
 			if(super.checkCircuitBreaker(responseEntity)) {
@@ -48,7 +53,6 @@ public class HomePageController extends BaseRestController {
 				return mv;
 	    	}
 			recentResponseEntity = clientService.fetchProductsUsingCategory("RecentProducts");
-			clientService.checkandReloadCartCount(session, cartUrl, response, request);
 		    if(responseEntity != null) {
 		    	ProductInfo[] productInfoList = gson.fromJson(responseEntity.getBody(), ProductInfo[].class);
 		    	mv.addObject("featureProducts", productInfoList);

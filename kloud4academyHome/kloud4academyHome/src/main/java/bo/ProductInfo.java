@@ -14,7 +14,7 @@ public class ProductInfo {
 	private String productId;
 	private String productName;
 	private String productDesc;
-	private String price;
+	private Double price;
 	private String productType;
 	private List<String> sizes;
 	private List<String> colors;

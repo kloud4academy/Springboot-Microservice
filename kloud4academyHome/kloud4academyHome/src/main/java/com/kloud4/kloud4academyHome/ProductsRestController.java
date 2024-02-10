@@ -2,16 +2,19 @@ package com.kloud4.kloud4academyHome;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,11 +24,15 @@ import com.google.gson.Gson;
 import com.kloud4.kloud4academyHome.ClientManager.ClientService;
 import com.kloud4.kloud4academyHome.controller.BaseRestController;
 
+import bo.FilterBean;
 import bo.ProductInfo;
 import bo.ProductReviewRequest;
+import bo.ProductSearchRequest;
 import bo.Review;
 import bo.SearchRequest;
 import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -38,21 +45,29 @@ public class ProductsRestController extends BaseRestController {
 	@Autowired
 	@Qualifier("redisTemplate")
 	private RedisTemplate redisCacheTemplate;
-	
 	@Autowired
 	Gson gson;
+	@Value("#{${priceRangeMap}}")
+	private Map<String,String> priceRangeMap;
+	@Value("${colorList}")
+	private List<String> colorList;
 	
-	@RequestMapping(value={"/productlist/{categoryId}", "/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}"},method = RequestMethod.GET)
-	public ModelAndView productList(@PathVariable String categoryId,HttpSession session) {
-		logger.info("-------Getting called controller---->>"+session.getAttribute("cartUrl"));
+	@RequestMapping(value={"/productlist/{categoryId}","/productfilter/{categoryId}","/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}"},method = RequestMethod.GET)
+	public ModelAndView productList(@PathVariable String categoryId,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
+		FilterBean filterBean = new FilterBean();
 	    ResponseEntity<String> responseEntity;
 	    String cartSize = "0";
-    	if(session.getAttribute("cartUrl") != null) {
-    		mv.addObject("cartUrl", session.getAttribute("cartUrl"));
-    		cartSize = (String) session.getAttribute("cartSize");
-    		mv.addObject("cartSize", cartSize);
-    	}
+	    String cartUrl = (String) session.getAttribute("cartUrl");
+   		if(StringUtils.isBlank(cartUrl)) {
+   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
+   			cartUrl = (String) session.getAttribute("cartUrl");
+   			cartSize = (String) session.getAttribute("cartSize");
+   		} else {
+   			cartSize = (String) session.getAttribute("cartSize");
+   		}
+   		mv.addObject("cartUrl", cartUrl);
+   		mv.addObject("cartSize", cartSize);
 		try {
 			responseEntity = clientService.fetchProductsUsingCategory(categoryId);
 		    if(responseEntity != null) {
@@ -65,6 +80,9 @@ public class ProductsRestController extends BaseRestController {
 		    	ProductInfo[] productInfoList = gson.fromJson(responseEntity.getBody(), ProductInfo[].class);
 		    	mv.addObject("productResponse", productInfoList);
 		    	mv.addObject("error", "");
+		    	mv.addObject("priceRangeMap", priceRangeMap);
+		    	mv.addObject("colorList", colorList);
+		    	mv.addObject("filterBean", filterBean);
 				mv.setViewName("productlist");
 			}
 		} catch (Exception e) {
@@ -78,18 +96,23 @@ public class ProductsRestController extends BaseRestController {
 	}
 	
 	@RequestMapping(path="/productdetail/{productId}",method = RequestMethod.GET)
-	public ModelAndView fetchProductUsingProductId(@PathVariable String productId, Model model,HttpSession session) {
+	public ModelAndView fetchProductUsingProductId(@PathVariable String productId, Model model,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		Review review = new Review();
 		review.setProductId(productId);
 		ModelAndView mv = new ModelAndView();
 	    ResponseEntity<String> responseEntity = null;
 	    String responseString = "";
 	    String cartSize = "0";
-    	if(session.getAttribute("cartUrl") != null) {
-    		mv.addObject("cartUrl", session.getAttribute("cartUrl"));
-    		cartSize = (String) session.getAttribute("cartSize");
-    		mv.addObject("cartSize", cartSize);
-    	}
+	    String cartUrl = (String) session.getAttribute("cartUrl");
+   		if(StringUtils.isBlank(cartUrl)) {
+   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
+   			cartUrl = (String) session.getAttribute("cartUrl");
+   			cartSize = (String) session.getAttribute("cartSize");
+   		} else {
+   			cartSize = (String) session.getAttribute("cartSize");
+   		}
+   		mv.addObject("cartUrl", cartUrl);
+   		mv.addObject("cartSize", cartSize);
 		try {
 			try {
 				if(redisCacheTemplate.hasKey(productId)) {
@@ -185,17 +208,65 @@ public class ProductsRestController extends BaseRestController {
 	}
 	
 	@RequestMapping(value="/productlist/searchproduct",method = RequestMethod.POST)
-	public ModelAndView searchproduct(SearchRequest searchRequest) {
-		logger.info("-------Getting called searchproduct controller---->>"+searchRequest.getSearchString());
+	public ModelAndView searchproduct(SearchRequest searchRequest,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
+		FilterBean filterBean = new FilterBean();
+		String cartSize = "0";
+	    String cartUrl = (String) session.getAttribute("cartUrl");
+   		if(StringUtils.isBlank(cartUrl)) {
+   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
+   			cartUrl = (String) session.getAttribute("cartUrl");
+   			cartSize = (String) session.getAttribute("cartSize");
+   		} else {
+   			cartSize = (String) session.getAttribute("cartSize");
+   		}
+   		mv.addObject("cartUrl", cartUrl);
+   		mv.addObject("cartSize", cartSize);
 	    ResponseEntity<String> responseEntity = null;;
 		try {
 			if(searchRequest != null && !StringUtils.isBlank(searchRequest.getSearchString())) {
 				responseEntity = clientService.searchProduct(searchRequest.getSearchString());
 			} else {
-				mv.addObject("searchError", "There are no products found");
-				mv.addObject("error", "true");
+				ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
+				return redirectmv;
+			}
+		    if(responseEntity != null) {
+		    	if(checkCircuitBreaker(responseEntity)) {
+		    		//TODO No need to enable now only for demo
+		    		mv.addObject("apiError", "false");
+		    		mv.addObject("error", "true");
+					mv.setViewName("productlist");
+					return mv;
+		    	}
+		    	ProductInfo[] productInfoList = gson.fromJson(responseEntity.getBody(), ProductInfo[].class);
+		    	mv.addObject("productResponse", productInfoList);
+		    	mv.addObject("error", "");
+		    	mv.addObject("filterBean", filterBean);
 				mv.setViewName("productlist");
+			}
+		} catch (Exception e) {
+			logger.info("-------Products search error in productlist ----");
+			mv.addObject("productResponse", "No Products Found");
+			mv.addObject("error", "true");
+			mv.setViewName("productlist");
+		}
+	    
+		return mv;
+	}
+	
+	@RequestMapping(path="/productfilter/colorfilter",method=RequestMethod.POST)
+	public ModelAndView colorFilter(FilterBean filterBean,BindingResult result, Model model) {
+		ModelAndView mv = new ModelAndView();
+	    ResponseEntity<String> responseEntity = null;;
+		try {
+			if(filterBean != null && !StringUtils.isBlank(filterBean.getSelectedColor())) {
+				ProductSearchRequest productSearchRequest = new ProductSearchRequest();
+				productSearchRequest.setSortType("colors");
+				productSearchRequest.setSortByString(filterBean.getSelectedColor());
+				responseEntity = clientService.filterProducts(productSearchRequest,"https://localhost:8083/search-ms/shopping/searchproductsort");
+			} else {
+				ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
+				return redirectmv;
 			}
 		    if(responseEntity != null) {
 		    	if(checkCircuitBreaker(responseEntity)) {
@@ -209,9 +280,52 @@ public class ProductsRestController extends BaseRestController {
 		    	mv.addObject("productResponse", productInfoList);
 		    	mv.addObject("error", "");
 				mv.setViewName("productlist");
+				mv.addObject("priceRangeMap", priceRangeMap);
+		    	mv.addObject("colorList", colorList);
 			}
 		} catch (Exception e) {
 			logger.info("-------Products search error in productlist ----");
+			mv.addObject("productResponse", "No Products Found");
+			mv.addObject("error", "true");
+			mv.setViewName("productlist");
+		}
+	    
+		return mv;
+	}
+	
+	@RequestMapping(path="/productfilter/pricefilter",method=RequestMethod.POST)
+	public ModelAndView productPriceFilter(FilterBean filterBean,BindingResult result, Model model) {
+		ModelAndView mv = new ModelAndView();
+	    ResponseEntity<String> responseEntity = null;;
+		try {
+			if(filterBean != null && !StringUtils.isBlank(filterBean.getSelectedPrice())) {
+				String[] pricearry = filterBean.getSelectedPrice().split("-");
+				ProductSearchRequest productSearchRequest = new ProductSearchRequest();
+				productSearchRequest.setPriceFrom(Double.parseDouble(pricearry[0]));
+				productSearchRequest.setPriceTo(Double.parseDouble(pricearry[1]));
+				responseEntity = clientService.filterProducts(productSearchRequest,"https://localhost:8083/search-ms/shopping/searchproductranges");
+			} else {
+				ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
+				return redirectmv;
+			}
+		    if(responseEntity != null) {
+		    	if(checkCircuitBreaker(responseEntity)) {
+		    		//TODO No need to enable now only for demo
+		    		mv.addObject("apiError", "false");
+		    		mv.addObject("error", "true");
+					mv.setViewName("productlist");
+					return mv;
+		    	}
+		    	ProductInfo[] productInfoList = gson.fromJson(responseEntity.getBody(), ProductInfo[].class);
+		    	logger.info("-----first productInfoList : "+productInfoList);
+		    	mv.addObject("productResponse", productInfoList);
+		    	mv.addObject("error", "");
+				mv.setViewName("productlist");
+				mv.addObject("priceRangeMap", priceRangeMap);
+		    	mv.addObject("colorList", colorList);
+			}
+		} catch (Exception e) {
+			logger.info("-------Products search filter error in productlist ----");
 			mv.addObject("productResponse", "No Products Found");
 			mv.addObject("error", "true");
 			mv.setViewName("productlist");

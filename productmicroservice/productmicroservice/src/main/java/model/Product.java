@@ -10,14 +10,14 @@ public class Product {
 	private String productId;
 	private String productName;
 	private String productDesc;
-	private String price;
+	private Double price;
 	private String productType;
 	private List<String> sizes;
 	private List<String> colors;
 	private String category;
 	private String imageURL;
 	
-	public Product(String productId,String productName,String productDesc,String price,List<String> sizes,List<String> colors, String productType,String category, String imageURL) {
+	public Product(String productId,String productName,String productDesc,Double price,List<String> sizes,List<String> colors, String productType,String category, String imageURL) {
 		super();
 		this.productId = productId;
 		this.productName = productName;
@@ -54,11 +54,11 @@ public class Product {
 		this.productDesc = productDesc;
 	}
 
-	public String getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 

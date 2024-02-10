@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +27,8 @@ public class Product {
 	@Field(name="productDesc")
 	private String productDesc;
 	@ReadOnlyProperty
-	@Field(name="price")
-	private String price;
+	@Field(type = FieldType.Double,name="price")
+	private double price;
 	@ReadOnlyProperty
 	@Field(name="imageURL")
 	private String imageURL;

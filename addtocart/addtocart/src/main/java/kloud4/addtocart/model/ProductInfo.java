@@ -7,7 +7,7 @@ public class ProductInfo {
 	private String productId;
 	private String productName;
 	private String productDesc;
-	private String price;
+	private Double price;
 	private String productType;
 	private List<String> sizes;
 	private List<String> colors;
@@ -31,10 +31,10 @@ public class ProductInfo {
 	public void setProductDesc(String productDesc) {
 		this.productDesc = productDesc;
 	}
-	public String getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(String price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	public String getProductType() {

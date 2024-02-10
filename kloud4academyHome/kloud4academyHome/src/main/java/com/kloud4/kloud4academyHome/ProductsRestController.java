@@ -52,7 +52,7 @@ public class ProductsRestController extends BaseRestController {
 	@Value("${colorList}")
 	private List<String> colorList;
 	
-	@RequestMapping(value={"/productlist/{categoryId}","/productfilter/{categoryId}","/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}"},method = RequestMethod.GET)
+	@RequestMapping(value={"/productlist/{categoryId}","/productfilter/{categoryId}","/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}","/cartdetail/{productId}/cartdelete/productlist/{categoryId}"},method = RequestMethod.GET)
 	public ModelAndView productList(@PathVariable String categoryId,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		FilterBean filterBean = new FilterBean();

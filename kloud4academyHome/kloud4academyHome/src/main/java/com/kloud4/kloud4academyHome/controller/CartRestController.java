@@ -100,7 +100,7 @@ public class CartRestController extends BaseRestController{
 			responseEntity = clientService.updateCart(cartData, session, response, request);
 			shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
 			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
-			if(shoppingCart != null && shoppingCart.getItems() != null) 
+			if(shoppingCart != null && shoppingCart.getItems() != null && shoppingCart.getItems().size() > 0) 
 				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
 			else
 				session.setAttribute("cartSize","0");
@@ -116,8 +116,9 @@ public class CartRestController extends BaseRestController{
 	}
 	
 	@RequestMapping(path="/cartdetail/{productId}/cartdelete/{cartId}",method = RequestMethod.GET)
-	public Object cartDelete(@PathVariable String cartId,@PathVariable String productId,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
+	public Object cartDelete(@PathVariable String productId,@PathVariable String cartId,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
 		ResponseEntity<String> responseEntity = null;
+		logger.info("Selected productid to be deleted: "+productId);
 		ModelAndView mv = new ModelAndView();
 		try {
 			if(StringUtils.isBlank(productId)) {
@@ -126,14 +127,13 @@ public class CartRestController extends BaseRestController{
 				//viewProductList("Women", redirectmv);
 			}
 			CartData cartData = new CartData();
-			cartData.setQuantity(cartData.getQuantity());
-			cartData.setProductId(cartData.getProductId());
-			cartData.setPrice(cartData.getPrice());
+			cartData.setProductId(productId);
 			cartData.setCartId(cartId);
 			responseEntity = clientService.deleteCart(cartData, session, response, request);
 			logger.info("delete cart response body : "+responseEntity.getBody());
 			logger.info("delete cart response status : "+responseEntity.getStatusCode());
 			ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
+			
 			if((shoppingCart == null) || (shoppingCart.getItems() == null || shoppingCart.getItems().size() == 0)) {
 				logger.info("There are not items in the cart");
 				return new ModelAndView("redirect:/productlist/Women");
@@ -146,7 +146,7 @@ public class CartRestController extends BaseRestController{
 			mv.addObject("shoppingCart", shoppingCart);
 			mv.setViewName("cart");
 		} catch(Exception e) {
-			logger.error("create cart error...."+e.getMessage());
+			logger.error("create cart error in delete cart...."+e.getMessage());
 			ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
 			return  redirectmv;
 			//viewProductList("Women", mv);

@@ -51,8 +51,8 @@ public class ShoppingCartController {
 		ShoppingCart shoppingCart = cartService.loadCartByCartId(cartRequest.getCartId());
 		cartService.deleteCart(shoppingCart, cartRequest);
 		ShoppingCart updateshoppingCart = cartService.loadCartByCartId(cartRequest.getCartId());
-		if(updateshoppingCart != null && updateshoppingCart.getCartId() != null) {
-			return gson.toJson(cartService.loadCartByCartId(cartRequest.getCartId()));
+		if(updateshoppingCart != null && updateshoppingCart.getItems() != null && updateshoppingCart.getItems().size() > 0) {
+			return gson.toJson(updateshoppingCart);
 		}
         
 		return "cart has been deleted";

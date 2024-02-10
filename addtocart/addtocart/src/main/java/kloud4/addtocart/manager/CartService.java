@@ -136,6 +136,10 @@ public class CartService {
 	
 	public String deleteCart(ShoppingCart shoppingCart, CartRequest cartRequest) {
 		populateDeleteCart(shoppingCart, cartRequest);
+		List<Item> itemsList = shoppingCart.getItems();
+		for(Object item : itemsList) {
+			Item itemobj = (Item) item;
+		}
 		mongoOperations.findAndReplace(Query.query(Criteria.where("cartId").is(shoppingCart.getCartId())), shoppingCart);
 		return "deleted cart item";
 	}
@@ -143,15 +147,19 @@ public class CartService {
 	public void populateDeleteCart(ShoppingCart cart, CartRequest cartRequest) {
 		logger.info("----------populateDeleteCart method ");
 		List<Item> cartItems = cart.getItems();
+		boolean itemFound = false;
 		if(cartItems != null) {
 			Item itemObej = null;
 			for (Object item : cartItems) {
 				itemObej = (Item) item;
 				if(itemObej.getProductId().equalsIgnoreCase(cartRequest.getProductId())) {
+					itemFound = true;
 					break;
 				}
 			}
-			cart.getItems().remove(itemObej);
+			if(itemFound) {
+				cart.getItems().remove(itemObej);
+			}
 		}
 		
 		repricingOrder(cart);

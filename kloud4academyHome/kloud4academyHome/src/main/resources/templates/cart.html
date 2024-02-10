@@ -55,7 +55,7 @@
                                             <td th:text="${shoppingInfo.price}">
                                             </td>
                                                
-                                            <td><button style="width:150px;height:50;" type="submit">Update Cart</button></td>                                
+                                            <td><button style="width:100px;height:50;" type="submit">Update Cart</button> <a href="#"><i class="fa fa-heart"></i></a></td>                                
                                             <td><a th:href="${'/cartdetail/' + {shoppingInfo.productInfo.productId} + '/cartdelete/' + {shoppingCart.cartId}}"><i class="fa fa-trash"></i></a></td>
                                             </form>
                                         </tr>

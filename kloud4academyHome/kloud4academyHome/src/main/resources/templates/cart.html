@@ -47,7 +47,7 @@
                                             <td th:text="${shoppingInfo.productInfo.price}"></td>
                                             <td>
                                                     <input type='button' value='-' class='qtyminus' field='quantity' />
-                                                    <input type='text' name='quantity' id='quantity' th:value='${shoppingInfo.toalQuantity}' class='qty' />
+                                                    <input type='text' name='quantity' id='quantity' th:value='${shoppingInfo.toalQuantity}' />
                                                     <input type="hidden" name='productId' id="productId" th:value='${shoppingInfo.productInfo.productId}'/> 
                                                     <input type="hidden" name='price' id="price" th:value='${shoppingInfo.productInfo.price}'/> 
                                                     <input type='button' value='+' class='qtyplus' field='quantity' />
@@ -55,7 +55,7 @@
                                             <td th:text="${shoppingInfo.price}">
                                             </td>
                                                
-                                            <td><button style="width:100px;height:50;" type="submit">Update Cart</button> <a href="#"><i class="fa fa-heart"></i></a></td>                                
+                                            <td><button style="width:100px;height:50;" type="submit">Update Cart</button> <a th:href="${'/cart/movetowishlist/' + {shoppingInfo.productInfo.productId} + '/' + {shoppingCart.cartId}}"><i class="fa fa-heart"></i></a></td>                                
                                             <td><a th:href="${'/cartdetail/' + {shoppingInfo.productInfo.productId} + '/cartdelete/' + {shoppingCart.cartId}}"><i class="fa fa-trash"></i></a></td>
                                             </form>
                                         </tr>

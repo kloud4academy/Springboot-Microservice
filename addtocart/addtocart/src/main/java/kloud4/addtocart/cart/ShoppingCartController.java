@@ -62,7 +62,7 @@ public class ShoppingCartController {
 	@ResponseBody
 	public String viewCart(@PathVariable String cartId) {
 		ShoppingCart shoppingCart = cartService.viewCart(cartId);
-		logger.info("-----------VIEW shopping cart");
+		logger.info("-----------VIEW shopping cart:---"+cartId);
         return gson.toJson(shoppingCart);
     }
 	

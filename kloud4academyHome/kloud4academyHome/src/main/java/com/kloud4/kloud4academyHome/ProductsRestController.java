@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,22 +51,12 @@ public class ProductsRestController extends BaseRestController {
 	@Value("${colorList}")
 	private List<String> colorList;
 	
-	@RequestMapping(value={"/productlist/{categoryId}","/productfilter/{categoryId}","/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}","/cartdetail/{productId}/cartdelete/productlist/{categoryId}"},method = RequestMethod.GET)
+	@RequestMapping(value={"/productlist/{categoryId}","/productfilter/{categoryId}","/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}","/cartdetail/{productId}/cartdelete/productlist/{categoryId}","/cart/viewwishlist/productlist/{categoryId}","/cart/deletewishlist/{productId}/productlist/{categoryId}"},method = RequestMethod.GET)
 	public ModelAndView productList(@PathVariable String categoryId,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		FilterBean filterBean = new FilterBean();
 	    ResponseEntity<String> responseEntity;
-	    String cartSize = "0";
-	    String cartUrl = (String) session.getAttribute("cartUrl");
-   		if(StringUtils.isBlank(cartUrl)) {
-   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
-   			cartUrl = (String) session.getAttribute("cartUrl");
-   			cartSize = (String) session.getAttribute("cartSize");
-   		} else {
-   			cartSize = (String) session.getAttribute("cartSize");
-   		}
-   		mv.addObject("cartUrl", cartUrl);
-   		mv.addObject("cartSize", cartSize);
+	    setCartAndWishListCount(session, response, request, mv);
 		try {
 			responseEntity = clientService.fetchProductsUsingCategory(categoryId);
 		    if(responseEntity != null) {
@@ -102,28 +91,16 @@ public class ProductsRestController extends BaseRestController {
 		ModelAndView mv = new ModelAndView();
 	    ResponseEntity<String> responseEntity = null;
 	    String responseString = "";
-	    String cartSize = "0";
-	    String cartUrl = (String) session.getAttribute("cartUrl");
-   		if(StringUtils.isBlank(cartUrl)) {
-   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
-   			cartUrl = (String) session.getAttribute("cartUrl");
-   			cartSize = (String) session.getAttribute("cartSize");
-   		} else {
-   			cartSize = (String) session.getAttribute("cartSize");
-   		}
-   		mv.addObject("cartUrl", cartUrl);
-   		mv.addObject("cartSize", cartSize);
+	    setCartAndWishListCount(session, response, request, mv);
 		try {
 			try {
 				if(redisCacheTemplate.hasKey(productId)) {
 					responseString = (String) redisCacheTemplate.opsForValue().get(productId);
-					logger.info("----------Wow coole redis cache is working: "+ responseString);
 				}
 			} catch (Exception e) {
 				logger.error("Redis Cache error occurred"+e.getMessage());
 			}
 			if("".equalsIgnoreCase(responseString) || responseString == null) {
-				logger.info("----------calling service and Not Fetch from Cache "+ responseString);
 				responseEntity = clientService.fetchProductUsingProductId(productId);
 				responseString = responseEntity.getBody();
 				if(!"statuscode".equalsIgnoreCase(responseString)) {
@@ -163,19 +140,21 @@ public class ProductsRestController extends BaseRestController {
 	
 	
 	@RequestMapping(value="/productdetail/{productId}",method=RequestMethod.POST)
-	public ModelAndView submitreview(@PathVariable String productId,@Valid Review review, BindingResult result, Model model,HttpSession session) {
-		 logger.info("---------Display review "+productId);
-		
+	public ModelAndView submitreview(@PathVariable String productId,@Valid Review review, BindingResult result, Model model,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		 ModelAndView mv = new ModelAndView();
 		 String cartSize = "0";
+		 String cartId = (String) session.getAttribute("cartId");
     	 if(session.getAttribute("cartUrl") != null) {
     		mv.addObject("cartUrl", session.getAttribute("cartUrl"));
     		cartSize = (String) session.getAttribute("cartSize");
+    		cartId = (String) session.getAttribute("cartId");
     		mv.addObject("cartSize", cartSize);
+    		mv.addObject("cartId", cartId);
     	 }
 	     mv.addObject("error", "");
 	     ProductInfo productInfo = null;
 	     try {
+	    	 mv.addObject("wishlistSize",getWishlistCountForOtherPage(session, response, request));
 	    	 String productString = (String) redisCacheTemplate.opsForValue().get(productId);
 		     productInfo = gson.fromJson(productString, ProductInfo.class);
 	     } catch(Exception e) {
@@ -191,6 +170,7 @@ public class ProductsRestController extends BaseRestController {
 		 review.setProductId(productId);
 		 sendProductReviews(review);
 		 loadProductReviewsSubmit(mv, productId);
+		 
 		 mv.addObject("reviewstatus", "Review submitted successfully");
 		model.addAttribute("review", new Review());
 	  return mv;
@@ -211,19 +191,10 @@ public class ProductsRestController extends BaseRestController {
 	public ModelAndView searchproduct(SearchRequest searchRequest,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		FilterBean filterBean = new FilterBean();
-		String cartSize = "0";
-	    String cartUrl = (String) session.getAttribute("cartUrl");
-   		if(StringUtils.isBlank(cartUrl)) {
-   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
-   			cartUrl = (String) session.getAttribute("cartUrl");
-   			cartSize = (String) session.getAttribute("cartSize");
-   		} else {
-   			cartSize = (String) session.getAttribute("cartSize");
-   		}
-   		mv.addObject("cartUrl", cartUrl);
-   		mv.addObject("cartSize", cartSize);
+		 
 	    ResponseEntity<String> responseEntity = null;;
 		try {
+			setCartAndWishListCount(session, response, request, mv);
 			if(searchRequest != null && !StringUtils.isBlank(searchRequest.getSearchString())) {
 				responseEntity = clientService.searchProduct(searchRequest.getSearchString());
 			} else {
@@ -255,10 +226,11 @@ public class ProductsRestController extends BaseRestController {
 	}
 	
 	@RequestMapping(path="/productfilter/colorfilter",method=RequestMethod.POST)
-	public ModelAndView colorFilter(FilterBean filterBean,BindingResult result, Model model) {
+	public ModelAndView colorFilter(FilterBean filterBean,BindingResult result, Model model,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-	    ResponseEntity<String> responseEntity = null;;
+	    ResponseEntity<String> responseEntity = null;
 		try {
+			setCartAndWishListCount(session, response, request, mv);
 			if(filterBean != null && !StringUtils.isBlank(filterBean.getSelectedColor())) {
 				ProductSearchRequest productSearchRequest = new ProductSearchRequest();
 				productSearchRequest.setSortType("colors");
@@ -294,10 +266,11 @@ public class ProductsRestController extends BaseRestController {
 	}
 	
 	@RequestMapping(path="/productfilter/pricefilter",method=RequestMethod.POST)
-	public ModelAndView productPriceFilter(FilterBean filterBean,BindingResult result, Model model) {
+	public ModelAndView productPriceFilter(FilterBean filterBean,BindingResult result, Model model,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 	    ResponseEntity<String> responseEntity = null;;
 		try {
+			setCartAndWishListCount(session, response, request, mv);
 			if(filterBean != null && !StringUtils.isBlank(filterBean.getSelectedPrice())) {
 				String[] pricearry = filterBean.getSelectedPrice().split("-");
 				ProductSearchRequest productSearchRequest = new ProductSearchRequest();

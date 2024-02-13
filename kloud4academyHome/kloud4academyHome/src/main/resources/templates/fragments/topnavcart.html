@@ -25,7 +25,7 @@
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">More Pages</a>
                                 <div class="dropdown-menu">
-                                    <a href="wishlist.html" class="dropdown-item">Wishlist</a>
+                                    <a th:href="${'/cart/viewwishlist'}" class="dropdown-item">Wishlist</a>
                                     <a href="contact.html" class="dropdown-item">Contact Us</a>
                                 </div>
                             </div>
@@ -58,18 +58,31 @@
                     </div>
                     <div class="col-md-3">
                         <div class="user">
-                            <a href="wishlist.html" class="btn wishlist">
+                        <span th:if="${shoppingCart} != null">
+                        <span th:if="${wishlistSize != ''}"> 
+                        <a th:href="${'/cart/viewwishlist/' + {shoppingCart.cartId}}" class="btn wishlist">
                                 <i class="fa fa-heart"></i>
-                                <span>(0)</span>
+                            		(<span th:text="${wishlistSize}"></span>)
                             </a>
-                            <span th:if="null != ${shoppingCart}">
-                             <a th:href="@{/cartdetail/cart/}+${shoppingCart.cartId}" class="btn cart">
-                                <i class="fa fa-shopping-cart"></i>
-                                <span th:if="${shoppingCart != null && not #lists.isEmpty(shoppingCart.items)}">
-                                (<span th:text="${shoppingCart.items.size}"></span>)
-                                </span>
+                        </span>
+                        <span th:if="${wishlistSize == '0' || wishlistSize == ''}"> 
+                        <a href="#" class="btn wishlist">
+                                <i class="fa fa-heart"></i>
+                            		(0)
                             </a>
+                        </span>
+                        </span>
+                        <span th:if="null != ${shoppingCart}">
+                         <a th:href="@{/cartdetail/cart/}+${shoppingCart.cartId}" class="btn cart">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span th:if="${shoppingCart != null && not #lists.isEmpty(shoppingCart.items)}">
+                            (<span th:text="${shoppingCart.items.size}"></span>)
                             </span>
+                            <span th:if="${shoppingCart != null && #lists.isEmpty(shoppingCart.items)}">
+                            (<span th:text="${cartSize}"></span>)
+                            </span>
+                        </a>
+                        </span>
                         </div>
                     </div>
                 </div>

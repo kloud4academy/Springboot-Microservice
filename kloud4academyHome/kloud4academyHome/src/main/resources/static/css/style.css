@@ -1665,11 +1665,6 @@ h2 {
     margin: 0;
 }
 
-.wishlist-page .table .qty {
-    display: inline-block;
-    width: 100px;
-    font-size: 0;
-}
 
 .wishlist-page .table button {
     width: 30px;

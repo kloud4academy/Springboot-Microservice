@@ -30,7 +30,7 @@ public class CartService {
 	CartRepository cartRepository;
 	
 	public ShoppingCart createCart(CartRequest cartRequest) {
-		ShoppingCart cart = populateCreateCart(cartRequest);;
+		ShoppingCart cart = populateCreateCart(cartRequest);
 		return cart;
 	}
 	
@@ -89,8 +89,8 @@ public class CartService {
 	
 	public void populateCart(ShoppingCart cart, CartRequest cartRequest) {
 		logger.info("----------populateCart method ");
-		List<Item> cartItems = cart.getItems();
-		if(cartItems != null) {
+		if(cart != null &&  cart.getItems() != null) {
+			List<Item> cartItems = cart.getItems();
 			double itemTotalPrice = 0.0;
 			boolean itemmatch = false;
 			for (Object item : cartItems) {
@@ -116,19 +116,34 @@ public class CartService {
 					cartItems.add(newItem);
 				}
 			}
-			
 		}
-		
-		
 		repricingOrder(cart);
-		
 	}
 	
+	private ShoppingCart populateEmptyCartItems(ShoppingCart shoppingCart, CartRequest cartRequest) {
+		Item item = new Item();
+		item.setDiscountPrice(0.0);
+		item.setToalQuantity(Integer.parseInt(cartRequest.getQuantity()));
+		item.setPrice(Double.parseDouble(cartRequest.getPrice()) * item.getToalQuantity());
+		item.setProductId(cartRequest.getProductId());
+		List<Item> items =new ArrayList<Item>();
+		items.add(item);
+		shoppingCart.setItems(items);
+		return shoppingCart;
+	}
 	public ShoppingCart updateCart(ShoppingCart shoppingCart, CartRequest cartRequest) {
-		logger.info("-------update cart is getting called-----");
-		populateCart(shoppingCart, cartRequest);
+		logger.info("-------update cart is getting called-----"+shoppingCart.getCartId());
 		Calendar calendar = Calendar.getInstance();
 		Date now = calendar.getTime();
+		if(shoppingCart == null) {
+			return createCart(cartRequest);
+		} else if(shoppingCart != null && shoppingCart.getItems() == null) {
+			populateEmptyCartItems(shoppingCart, cartRequest);
+			shoppingCart.setUpdateDate(now);
+			mongoOperations.findAndReplace(Query.query(Criteria.where("cartId").is(shoppingCart.getCartId())), shoppingCart);
+			return shoppingCart;
+		}
+		populateCart(shoppingCart, cartRequest);
 		shoppingCart.setUpdateDate(now);
 		mongoOperations.findAndReplace(Query.query(Criteria.where("cartId").is(shoppingCart.getCartId())), shoppingCart);
 		return shoppingCart;
@@ -179,7 +194,6 @@ public class CartService {
 		
 		ShoppingCart shoppingCart = mongoOperations.findOne(query, ShoppingCart.class,"cartDetails");
 		
-		logger.info("---------cart has been loadded...." + shoppingCart);
 		return shoppingCart;
 	}
 	
@@ -187,7 +201,6 @@ public class CartService {
 		Query query = new Query().addCriteria(Criteria.where("shopperProfileId").is(profileId));
 		ShoppingCart shoppingCart = mongoOperations.findOne(query, ShoppingCart.class,"cartDetails");
 		
-		logger.info("---------cart has been loadded...." + shoppingCart);
 		return shoppingCart;
 	}
 	
@@ -200,21 +213,16 @@ public class CartService {
 	
 	public ShoppingCart addtoCart(CartRequest cartRequest) {
 		ShoppingCart shoppingCart = null;
-		logger.info("----addtocart service called-----"+cartRequest.getShopperProfileId());
 		if(cartRequest != null && StringUtils.isNotBlank(cartRequest.getShopperProfileId()) && StringUtils.isNotBlank(cartRequest.getCartId()))  {
-			logger.info("----addtocart ProfileId and cartid is there-----");
 			shoppingCart = loadCartByCartId(cartRequest.getCartId());
 			updateCart(shoppingCart, cartRequest);
 		} else if(StringUtils.isNotBlank(cartRequest.getShopperProfileId()) && StringUtils.isBlank(cartRequest.getCartId())) {
-			logger.info("----addtocart ProfileId only is there-----");
-			logger.info("----create cart and keep in session first time....");
 			shoppingCart = loadCartByProfileId(cartRequest.getShopperProfileId());
 			if(shoppingCart != null) {
 				updateCart(shoppingCart, cartRequest);
 			} else {
 				shoppingCart = createCart(cartRequest);
 			}
-			logger.info("------------Cart Jsessionid cookie: ");
 		}
 		return shoppingCart;
 	}

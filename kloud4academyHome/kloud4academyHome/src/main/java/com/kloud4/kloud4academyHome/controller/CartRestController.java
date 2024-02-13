@@ -1,5 +1,8 @@
 package com.kloud4.kloud4academyHome.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.kloud4.kloud4academyHome.ClientManager.CartClientService;
 import com.kloud4.kloud4academyHome.ClientManager.ClientService;
 import com.kloud4.kloud4academyHome.model.CartUpdate;
 import com.kloud4.kloud4academyHome.model.ShoppingCart;
 
+import bo.WishListItemBean;
+import bo.WishlistRequest;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,11 +34,14 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 public class CartRestController extends BaseRestController{
+	Logger logger = LoggerFactory.getLogger(CartRestController.class);
+	
 	@Autowired
 	Gson gson;
 	@Autowired
 	private ClientService clientService;
-	Logger logger = LoggerFactory.getLogger(CartRestController.class);
+	@Autowired
+	private CartClientService cartClientService;
 	
 	@RequestMapping(value="/productdetail/cart", method = RequestMethod.POST)
 	@ResponseBody
@@ -61,7 +70,7 @@ public class CartRestController extends BaseRestController{
 	
 	
 	@RequestMapping(path="/cartdetail/cart/{cartId}",method = RequestMethod.GET)
-	public ModelAndView cartdetail(@PathVariable String cartId,Model model,HttpSession session) {
+	public ModelAndView cartdetail(@PathVariable String cartId,Model model,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		CartUpdate cartUpdate = new CartUpdate();
 		logger.info("--------Called Cart controller");
 		ResponseEntity<String> responseEntity = null;
@@ -72,6 +81,12 @@ public class CartRestController extends BaseRestController{
 			shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
 			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
 			session.setAttribute("cartUrl", "/cartdetail/cart/"+cartId);
+			session.setAttribute("cartId",cartId);
+			try {
+				mv.addObject("wishlistSize", getWishlistCountForCartPage(session, response, request));
+			} catch(Exception e) {
+				logger.error("Error occurred during getwishlistcount" + e.getMessage());
+			}
 			if(shoppingCart != null && shoppingCart.getItems() != null) 
 				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
 			else
@@ -80,6 +95,10 @@ public class CartRestController extends BaseRestController{
 			logger.error("create cart error...."+e.getMessage());
 			return new ModelAndView("redirect:/productlist/Women");
 		}
+		
+		if((shoppingCart == null) ||(shoppingCart != null && shoppingCart.getItems() != null && shoppingCart.getItems().size() == 0)) 
+			return new ModelAndView("redirect:/productlist/Women");
+		
 		mv.addObject("shoppingCart", shoppingCart);
 		model.addAttribute("cartUpdate", cartUpdate);
 		mv.setViewName("cart");
@@ -100,10 +119,22 @@ public class CartRestController extends BaseRestController{
 			responseEntity = clientService.updateCart(cartData, session, response, request);
 			shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
 			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
-			if(shoppingCart != null && shoppingCart.getItems() != null && shoppingCart.getItems().size() > 0) 
-				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
-			else
+			int itemSize = 0;
+			if(shoppingCart != null && shoppingCart.getItems() != null && shoppingCart.getItems().size() > 0) {
+				itemSize = shoppingCart.getItems().size();
+				session.setAttribute("cartSize", String.valueOf(itemSize));
+			}
+			else {
+				itemSize = 0;
 				session.setAttribute("cartSize","0");
+			}
+			
+			try {
+				mv.addObject("wishlistSize", getWishlistCountForCartPage(session, response, request));
+			} catch(Exception e) {
+				logger.error("Error occurred during getwishlistcount" + e.getMessage());
+			}
+			mv.addObject("cartSize", String.valueOf(itemSize));
 			mv.addObject("shoppingCart", shoppingCart);
 			mv.setViewName("cart");
 		} catch(Exception e) {
@@ -111,14 +142,13 @@ public class CartRestController extends BaseRestController{
 			ModelAndView redirectmv = new ModelAndView("redirect:/productlist/Women");
 			return  redirectmv;
 		}
-	    
+		
 		return mv;
 	}
 	
 	@RequestMapping(path="/cartdetail/{productId}/cartdelete/{cartId}",method = RequestMethod.GET)
 	public Object cartDelete(@PathVariable String productId,@PathVariable String cartId,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
 		ResponseEntity<String> responseEntity = null;
-		logger.info("Selected productid to be deleted: "+productId);
 		ModelAndView mv = new ModelAndView();
 		try {
 			if(StringUtils.isBlank(productId)) {
@@ -130,8 +160,6 @@ public class CartRestController extends BaseRestController{
 			cartData.setProductId(productId);
 			cartData.setCartId(cartId);
 			responseEntity = clientService.deleteCart(cartData, session, response, request);
-			logger.info("delete cart response body : "+responseEntity.getBody());
-			logger.info("delete cart response status : "+responseEntity.getStatusCode());
 			ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
 			
 			if((shoppingCart == null) || (shoppingCart.getItems() == null || shoppingCart.getItems().size() == 0)) {
@@ -139,10 +167,18 @@ public class CartRestController extends BaseRestController{
 				return new ModelAndView("redirect:/productlist/Women");
 			}
 			shoppingCart = clientService.populateCartProdunctInfo(shoppingCart);
-			if(shoppingCart != null && shoppingCart.getItems() != null) 
-				session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
-			else
+			int itemSize = 0;
+			if(shoppingCart != null && shoppingCart.getItems() != null && shoppingCart.getItems().size() > 0) {
+				itemSize = shoppingCart.getItems().size();
+				session.setAttribute("cartSize", String.valueOf(itemSize));
+			}
+			else {
+				itemSize = 0;
 				session.setAttribute("cartSize","0");
+			}
+			String wishlistSize = (String) session.getAttribute("wishlistSize");
+			mv.addObject("wishlistSize", wishlistSize);
+			mv.addObject("cartSize", String.valueOf(itemSize));
 			mv.addObject("shoppingCart", shoppingCart);
 			mv.setViewName("cart");
 		} catch(Exception e) {
@@ -152,6 +188,162 @@ public class CartRestController extends BaseRestController{
 			//viewProductList("Women", mv);
 		}
 	    
+		return mv;
+	}
+	
+	@RequestMapping(path="/cart/movetowishlist/{productId}/{cartId}",method = RequestMethod.GET)
+	public ModelAndView wishlistCart(@PathVariable String productId,@PathVariable String cartId,HttpSession session,HttpServletResponse response, HttpServletRequest request) {
+		logger.info("--------Called wishlistCart controller");
+		WishlistRequest wishlistRequest = new WishlistRequest();
+		ModelAndView mv = new ModelAndView();
+		List<String> productList = new ArrayList<String>();
+		productList.add(productId);
+		wishlistRequest.setProductIdList(productList);
+		wishlistRequest.setCartId(cartId);
+		wishlistRequest.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+		try {
+			cartClientService.wishListAPICall(wishlistRequest, response, request,"/cart-ms/wishlist/movetowishlist");
+		} catch(Exception e) {
+			logger.error("Error occured during whishlist update"+e.getMessage());
+		}
+		mv.setViewName("cart");
+	//	return mv;
+		return new ModelAndView("redirect:/cartdetail/cart/"+cartId);
+	}
+	
+	@RequestMapping(path="/cart/viewwishlist/{cartId}",method = RequestMethod.GET)
+	public ModelAndView viewwishlistCart(@PathVariable String cartId,HttpSession session,HttpServletResponse response, HttpServletRequest request) {
+		ResponseEntity<String> responseEntity = null;
+		WishlistRequest wishlistResponse = null;
+		ModelAndView mv = new ModelAndView();
+		WishlistRequest wishlistRequest = new WishlistRequest();
+		WishListItemBean wishListItemBean = null;
+		wishlistRequest.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+		try {
+			responseEntity = cartClientService.wishListAPICall(wishlistRequest, response, request,"/cart-ms/wishlist/viewwishlist");
+			if(responseEntity.getBody() == null || responseEntity.getBody() == "") {
+				return new ModelAndView("redirect:/productlist/Women");
+			}
+			wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+			mv.addObject("wishlistSize",getWishlistCountForCartPage(session, response, request));
+			if(wishlistResponse != null) {
+				wishListItemBean = cartClientService.populateWishListItem(wishlistResponse);
+			} else {
+				return new ModelAndView("redirect:/productlist/Women");
+			}
+		} catch(Exception e) {
+			logger.error("Error occured during whishlist update"+e.getMessage());
+			return new ModelAndView("redirect:/productlist/Women");
+		}
+		
+		mv.addObject("cartSize", (String)session.getAttribute("cartSize"));
+		mv.addObject("wishlistItems", wishListItemBean);
+		ShoppingCart shoppingCart = new ShoppingCart();
+		shoppingCart.setCartId(cartId);
+		mv.addObject("shoppingCart", shoppingCart);
+		mv.setViewName("wishlist");
+		return mv;
+	}
+	
+	@RequestMapping(path="/cart/viewwishlist/{cartId}",method = RequestMethod.POST)
+	public ModelAndView addwishlistToCart(@PathVariable String cartId,CartUpdate cartUpdate, BindingResult result, Model model,HttpSession session,HttpServletResponse response, HttpServletRequest request) {
+		ResponseEntity<String> responseEntity = null;
+		WishlistRequest wishlistResponse = null;
+		ModelAndView mv = new ModelAndView();
+		String selectedQty = cartUpdate.getQuantity();
+		if("".equalsIgnoreCase(cartUpdate.getQuantity()) || "0".equalsIgnoreCase(cartUpdate.getQuantity()))
+			selectedQty = "1";
+			
+		CartData cartData = new CartData();
+		cartData.setQuantity(selectedQty.trim());
+		cartData.setProductId(cartUpdate.getProductId());
+		cartData.setPrice(cartUpdate.getPrice());
+		cartData.setCartId(cartId);
+		try {
+			responseEntity = clientService.updateCart(cartData, session, response, request);
+			if(responseEntity != null && responseEntity.getBody() != null) {
+				ShoppingCart shoppingCart = gson.fromJson(responseEntity.getBody(), ShoppingCart.class);
+				if(shoppingCart != null && shoppingCart.getItems() != null) {
+					mv.addObject("cartSize", String.valueOf(shoppingCart.getItems().size()));
+				    session.setAttribute("cartSize", String.valueOf(shoppingCart.getItems().size()));
+				}
+				else {
+					mv.addObject("cartSize", (String)session.getAttribute("cartSize"));
+				}
+				WishlistRequest wishlistRequest = new WishlistRequest();
+				List<String> productList = new ArrayList<String>();
+				productList.add(cartUpdate.getProductId());
+				wishlistRequest.setProductIdList(productList);
+				wishlistRequest.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+				ResponseEntity<String> deleteresponseEntity = cartClientService.wishListAPICall(wishlistRequest, response, request,"/cart-ms/wishlist/deletewishlist");
+			}
+		} catch (Exception e) {
+			logger.error("Error occured during whishlist to cart"+e.getMessage());
+		}
+		WishlistRequest wishlistRequest = new WishlistRequest();
+		WishListItemBean wishListItemBean = null;
+		wishlistRequest.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+		try {
+			responseEntity = cartClientService.wishListAPICall(wishlistRequest, response, request,"/cart-ms/wishlist/viewwishlist");
+			if(responseEntity.getBody() == null || responseEntity.getBody() == "") {
+				return new ModelAndView("redirect:/cart/viewwishlist/"+cartId);
+			}
+			wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+			mv.addObject("wishlistSize",getWishlistCountForCartPage(session, response, request));
+			if(wishlistResponse != null) {
+				wishListItemBean = cartClientService.populateWishListItem(wishlistResponse);
+			} else {
+				return new ModelAndView("redirect:/cart/viewwishlist/"+cartId);
+			}
+		} catch(Exception e) {
+			logger.error("Error occured during whishlist update"+e.getMessage());
+			return new ModelAndView("redirect:/productlist/Women");
+		}
+		
+		mv.addObject("wishlistItems", wishListItemBean);
+		ShoppingCart shoppingCart = new ShoppingCart();
+		shoppingCart.setCartId(cartId);
+		mv.addObject("shoppingCart", shoppingCart);
+		mv.setViewName("wishlist");
+		return mv;
+	}
+	
+	@RequestMapping(path="/cart/deletewishlist/{productId}/{cartId}",method = RequestMethod.GET)
+	public Object deleteWishlist(@PathVariable String productId,@PathVariable String cartId,HttpSession session, HttpServletResponse response,HttpServletRequest request) {
+		ResponseEntity<String> responseEntity = null;
+		WishlistRequest wishlistResponse = null;
+		ModelAndView mv = new ModelAndView();
+		WishlistRequest wishlistRequest = new WishlistRequest();
+		List<String> productList = new ArrayList<String>();
+		productList.add(productId);
+		wishlistRequest.setProductIdList(productList);
+		
+		WishListItemBean wishListItemBean = null;
+		wishlistRequest.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+		try {
+			responseEntity = cartClientService.wishListAPICall(wishlistRequest, response, request,"/cart-ms/wishlist/deletewishlist");
+			if(responseEntity.getBody() == null || responseEntity.getBody() == "") {
+				return new ModelAndView("redirect:/productlist/Women");
+			}
+			wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+			mv.addObject("wishlistSize",getWishlistCountForCartPage(session, response, request));
+			if(wishlistResponse != null) {
+				wishListItemBean = cartClientService.populateWishListItem(wishlistResponse);
+			} else {
+				return new ModelAndView("redirect:/productlist/Women");
+			}
+			
+		} catch(Exception e) {
+			logger.error("Error occured during whishlist delete"+e.getMessage());
+			return new ModelAndView("redirect:/productlist/Women");
+		}
+		
+		mv.addObject("cartSize", (String)session.getAttribute("cartSize"));
+		mv.addObject("wishlistItems", wishListItemBean);
+		ShoppingCart shoppingCart = new ShoppingCart();
+		shoppingCart.setCartId(cartId);
+		mv.addObject("shoppingCart", shoppingCart);
+		mv.setViewName("wishlist");
 		return mv;
 	}
 }

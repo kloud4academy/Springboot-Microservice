@@ -12,11 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.kloud4.kloud4academyHome.ClientManager.CartClientService;
 import com.kloud4.kloud4academyHome.ClientManager.ClientService;
 
 import bo.ProductInfo;
 import bo.ProductReviewRequest;
 import bo.Review;
+import bo.WishListItemBean;
+import bo.WishlistRequest;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class BaseRestController {
 	@Autowired
@@ -24,6 +31,8 @@ public class BaseRestController {
 	@Autowired
 	@Qualifier("redisTemplate")
 	private RedisTemplate redisCacheTemplate;
+	@Autowired
+	private CartClientService cartClientService;
 	
 	@Autowired
 	Gson gson;
@@ -130,5 +139,74 @@ public class BaseRestController {
 		} catch (Exception e) {
 			logger.error("Product review error");
 		}
+	}
+	
+	public String getWishlistCountForCartPage(HttpSession session, HttpServletResponse response,HttpServletRequest request) throws Exception {
+		WishlistRequest wishlistRequestView = new WishlistRequest();
+		wishlistRequestView.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+		
+		ResponseEntity<String> responseEntity = cartClientService.wishListAPICall(wishlistRequestView, response, request,"/cart-ms/wishlist/viewwishlist");
+		WishlistRequest wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+			
+		String itemSize = "";
+		if(wishlistResponse != null && wishlistResponse.getProductIdList() != null && wishlistResponse.getProductIdList().size() > 0) {
+			itemSize = String.valueOf(wishlistResponse.getProductIdList().size());
+			session.setAttribute("wishlistSize", itemSize);
+		} else {
+			session.setAttribute("wishlistSize", "");
+		}
+		
+		return itemSize;
+	}
+	public String getWishlistCountForOtherPage(HttpSession session, HttpServletResponse response,HttpServletRequest request) throws Exception {
+		String wishlistSize = (String) session.getAttribute("wishlistSize");
+		if(StringUtils.isBlank(wishlistSize)) {
+			WishlistRequest wishlistRequestView = new WishlistRequest();
+			wishlistRequestView.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
+			
+			ResponseEntity<String> responseEntity = cartClientService.wishListAPICall(wishlistRequestView, response, request,"/cart-ms/wishlist/viewwishlist");
+			WishlistRequest wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+				
+			int itemSize = 0;
+			if(wishlistResponse != null && wishlistResponse.getProductIdList() != null && wishlistResponse.getProductIdList().size() > 0) {
+				itemSize = wishlistResponse.getProductIdList().size();
+				session.setAttribute("wishlistSize", String.valueOf(itemSize));
+			}
+			else {
+				itemSize = 0;
+				session.setAttribute("wishlistSize","0");
+			}
+			
+			wishlistSize = String.valueOf(itemSize);
+		}
+		
+		return wishlistSize;
+	}
+	
+	public void setCartAndWishListCount(HttpSession session,HttpServletResponse response,HttpServletRequest request,ModelAndView mv) {
+		String cartSize = "0";
+	    String cartUrl = (String) session.getAttribute("cartUrl");
+	    String cartId = (String) session.getAttribute("cartId");
+	    String wishlistSize = (String) session.getAttribute("wishlistSize");
+	    if(StringUtils.isBlank(wishlistSize)) {
+	    	try {
+				wishlistSize = getWishlistCountForCartPage(session, response, request);
+			} catch (Exception e) {
+				logger.error("wishlist count call error: "+e.getMessage());
+			}
+		}
+   		if(StringUtils.isBlank(cartUrl)) {
+   			clientService.checkandReloadCartCount(session, cartUrl, response, request);
+   			cartUrl = (String) session.getAttribute("cartUrl");
+   			cartSize = (String) session.getAttribute("cartSize");
+   			cartId = (String) session.getAttribute("cartId");
+   		} else {
+   			cartSize = (String) session.getAttribute("cartSize");
+   		}
+   		
+   		mv.addObject("cartUrl", cartUrl);
+   		mv.addObject("cartSize", cartSize);
+   		mv.addObject("cartId", cartId);
+   		mv.addObject("wishlistSize",wishlistSize);
 	}
 }

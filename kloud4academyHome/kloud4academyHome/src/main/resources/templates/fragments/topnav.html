@@ -53,10 +53,18 @@
                     </div>
                     <div class="col-md-3">
                         <div class="user">
-                            <a href="wishlist.html" class="btn wishlist">
-                                <i class="fa fa-heart"></i>
-                                <span>(0)</span>
-                            </a>
+                              <span th:if="${wishlistSize != ''}"> 
+		                        <a th:href="${'/cart/viewwishlist/' + {cartId}}" class="btn wishlist">
+		                                <i class="fa fa-heart"></i>
+		                            		(<span th:text="${wishlistSize}"></span>)
+		                            </a>
+		                        </span>
+		                        <span th:if="${wishlistSize == '0' || wishlistSize == ''}"> 
+		                        <a href="#" class="btn wishlist">
+		                                <i class="fa fa-heart"></i>
+		                            		(0)
+		                            </a>
+		                        </span>
                           <a th:href="${cartUrl}" class="btn cart">
                                 <i class="fa fa-shopping-cart"></i>
                                <span th:if="${cartSize != null}">

@@ -34,17 +34,30 @@ public class HomePageController extends BaseRestController {
 		ModelAndView mv = new ModelAndView();
 		String cartSize = "0";
 		String cartUrl = "";
+		String cartId="1111";
    		cartUrl = (String) session.getAttribute("cartUrl");
+   		String wishlistSize = (String) session.getAttribute("wishlistSize");
+	    if(StringUtils.isBlank(wishlistSize) || wishlistSize.equalsIgnoreCase("0")) {
+	    	try {
+				wishlistSize = getWishlistCountForOtherPage(session, response, request);
+			} catch (Exception e) {
+				logger.error("wishlist count call error: "+e.getMessage());
+			}
+		}
    		if(StringUtils.isBlank(cartUrl)) {
    			clientService.checkandReloadCartCount(session, cartUrl, response, request);
    			cartUrl = (String) session.getAttribute("cartUrl");
    			cartSize = (String) session.getAttribute("cartSize");
+   			cartId = (String) session.getAttribute("cartId");
    		} else {
    			cartSize = (String) session.getAttribute("cartSize");
+   			//cartId = (String) session.getAttribute("cartId");
    		}
+   		mv.addObject("cartId", cartId);
    		mv.addObject("cartUrl", cartUrl);
    		mv.addObject("cartSize", cartSize);
 		try {
+			 mv.addObject("wishlistSize",wishlistSize);
 			responseEntity = clientService.fetchProductsUsingCategory("Featured");
 			if(super.checkCircuitBreaker(responseEntity)) {
 	    		mv.addObject("apiError", "true");

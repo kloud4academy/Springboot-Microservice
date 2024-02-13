@@ -50,7 +50,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Service
-public class ClientService {
+public class ClientService extends BaseClientService{
 	Logger logger = LoggerFactory.getLogger(ClientService.class);
 	@Autowired
 	private DiscoveryClient discoveryClient;
@@ -135,27 +135,6 @@ public class ClientService {
 		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
 	}
 	
-	@Bean
-	public RestTemplate restTemplate() {
-		RestTemplate restTemplate = null;
-		try {
-			org.apache.hc.core5.ssl.TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-		    SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-		    org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory csf = new org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory(sslContext);
-		    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create().register("https", csf).build();
-		    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-		    CloseableHttpClient httpclient = HttpClients.custom()
-		            .setConnectionManager(cm).build();
-		   requestFactory.setHttpClient(httpclient);
-			
-		   restTemplate = new RestTemplate(requestFactory);
-		} catch(Exception e) {
-			
-		}
-		return restTemplate;
-	}
-	
 	@CircuitBreaker(name="kloud4breaker")
 	public ResponseEntity<String> fetchProductReviews(String productId) throws Exception {
 		List servicesList  = discoveryClient.getServices();
@@ -220,7 +199,6 @@ public class ClientService {
 				}
 			}
 		}
-		logger.info("-------ProductId parameter-in View Cart---"+cartId);
 		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8082/cart-ms/shopping/viewCart" + "/"+cartId, String.class);
 		return response;
 	}
@@ -245,33 +223,6 @@ public class ClientService {
 		logger.info("-------ProductId parameter-in load Cart---"+shopperId);
 		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8082/cart-ms/shopping/loadcartbyshopperid" + "/"+shopperId, String.class);
 		return response;
-	}
-	
-	public String createShopperProfile(HttpServletResponse response, HttpServletRequest request) {
-		String shopperProfileId = "";
-		try {
-			logger.info("-------Create cookie called");
-			if(WebUtils.getCookie(request, "cartcookie") != null) {
-				shopperProfileId = WebUtils.getCookie(request, "cartcookie").getValue();
-			}
-			logger.info("-------Create cookie called : shopperProfileId :"+shopperProfileId);
-			if(StringUtils.isEmpty(shopperProfileId)) {
-				logger.info("-------Create cookie");
-				shopperProfileId = Klou4RandomUtils.createShopperId();
-				jakarta.servlet.http.Cookie shopperCookie = new jakarta.servlet.http.Cookie("cartcookie", shopperProfileId);
-				//7 days expiry
-				shopperCookie.setMaxAge(7 * 24 * 60 * 60);
-				shopperCookie.setSecure(true);
-				shopperCookie.setPath("/");
-				shopperCookie.setDomain("localhost");
-				response.addCookie(shopperCookie);
-				logger.info("-------after set create cookie");
-			} 
-		} catch (Exception e) {
-			logger.error("Cookie error occurred"+e.getMessage());
-		}
-		
-		return shopperProfileId;
 	}
 	
 	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbackUpdateCartAPIError")
@@ -303,17 +254,14 @@ public class ClientService {
 	
 	public ResponseEntity<String> addToCart(CartData cartData,HttpSession session, HttpServletResponse response, HttpServletRequest request) throws Exception {
 		SendCartRequest sendCartRequest = populateSendCartRequest(cartData,session,response,request);
-		logger.info("-------CartIdentifier:"+sendCartRequest.getShopperProfileId());
-		logger.info("-------CartIdentifier profile:"+sendCartRequest.getCartId());
 		ResponseEntity<String> responseEntity = addToCart(sendCartRequest);
-		logger.info("-------CartIdentifier responseEntity:"+responseEntity.getBody());
 		
 		return responseEntity;
 	}
 	
 	private SendCartRequest populateSendCartRequest(CartData cartData, HttpSession session, HttpServletResponse response, HttpServletRequest request) {
 		SendCartRequest sendCartRequest = new SendCartRequest();
-		sendCartRequest.setShopperProfileId(createShopperProfile(response,request));
+		sendCartRequest.setShopperProfileId(createOrGetShopperProfile(response,request));
 		
 		sendCartRequest.setColor(cartData.getColor());
 		sendCartRequest.setPrice(cartData.getPrice());
@@ -375,6 +323,7 @@ public class ClientService {
 				ShoppingCartCount shoppingCartCount = gson.fromJson(responseEntity.getBody(), ShoppingCartCount.class);
 				if(shoppingCartCount != null && shoppingCartCount.getCartId() != null) {
 					session.setAttribute("cartUrl", "/cartdetail/cart/"+shoppingCartCount.getCartId());
+					session.setAttribute("cartId", shoppingCartCount.getCartId());
 					session.setAttribute("cartSize", String.valueOf(shoppingCartCount.getCartSize()));
 				}
 			} catch (Exception e) {
@@ -431,7 +380,7 @@ public class ClientService {
 		return response;
 	}
 	
-	private ResponseEntity<String> fallbacksearchFilterAPIError(ProductSearchRequest productSearchRequest,Exception e) {
+	private ResponseEntity<String> fallbacksearchFilterAPIError(ProductSearchRequest productSearchRequest,String endpointURL,Exception e) {
 		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
 		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
 	} 
@@ -450,7 +399,7 @@ public class ClientService {
 		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
 		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
 	} 
-	private ResponseEntity<String> fallbackUpdateCartAPIError(CartData shoppingCart,Exception e) {
+	private ResponseEntity<String> fallbackUpdateCartAPIError(CartData shoppingCart,HttpSession session, HttpServletResponse response, HttpServletRequest request,Exception e) {
 		logger.info("--------fallbackCartAPIError called circuitbreaker started....");
 		return new ResponseEntity<String>("statuscode", HttpStatusCode.valueOf(404));
 	} 

@@ -60,11 +60,9 @@ public class WishlistServiceManager {
 		if(wishList != null) {
 			Set<String> wishlistProducts = wishList.getProductIdList();
 			if(wishlistProducts != null && wishlistProducts.size() > 0) {
-				logger.info("------wishListBean.getProductIdList().stream().findFirst().get()-:"+wishListBean.getProductIdList().stream().findFirst().get());
 				wishlistProducts.add(wishListBean.getProductIdList().stream().findFirst().get());
 			} else {
 				wishlistProducts = new HashSet<String>();
-				logger.info("------wishListBean.getProductIdList().stream().findFirst().get()-:"+wishListBean.getProductIdList().stream().findFirst().get());
 				wishlistProducts.add(wishListBean.getProductIdList().stream().findFirst().get());
 			}
 			

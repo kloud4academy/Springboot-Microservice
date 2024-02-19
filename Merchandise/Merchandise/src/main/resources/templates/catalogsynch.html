@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:replace="fragments/header :: header"></div>
+    <body>
+        <!-- Cart Start -->
+        <div class="cart-page">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="cart-page-inner">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>FileName</th>
+                                            <th>Process</th>
+                                            <th>Remove</th>
+                                            <th style="width:170px;overflow: hidden;">LastModifiedDate</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody class="align-middle">
+                                        <tr th:each="pimFileInfo : ${catalogFiles}">
+                                            <td><span th:text="${pimFileInfo.fileName}"></td>
+                                             <td><span th:if="${'Processed' == pimFileInfo.status}">
+                                             <button style="width:75px;color:#4682b4 "><a th:href="${'/pim/processCatalogData/' + {pimFileInfo.fileName}}">ReProcess</a></button>
+                                            </span>
+                                            <span th:if="${'New' == pimFileInfo.status}">
+                                             <button style="width:75px;"><a th:href="${'/pim/processCatalogData/' + {pimFileInfo.fileName}}">Process</a></button>
+                                            </span>
+                                            <span th:if="${'ReProcessed' == pimFileInfo.status}">
+                                             <button style="width:75px;"><a th:href="${'/pim/processCatalogData/' + {pimFileInfo.fileName}}">ReProcess</a></button>
+                                            </span>
+                                             </td> 
+                                            <td><button style="width:70px;"><a th:href="${'/pim/deletecatalog/' + {pimFileInfo.fileName}}">Delete</a></button></td>                                
+                                            <td><span th:text="${pimFileInfo.lastModifiedDate}"></span></td>
+                                             <td><span th:text="${pimFileInfo.status}"></span></td>
+                                        </tr>
+                                        <tr>
+								        <td><form method="post" th:action="@{/pim/uploadcatalog}" enctype="multipart/form-data">
+								         <span th:if="${null != succesMsg}" style="color:red"><span th:text="${succesMsg}"></span></span>
+								         <span style="width:350px;height:50;align:center;"><input name="file" type="file" id="file" style="width:100px;">&nbsp;<button style="width:100px;height:50;" type="submit">UploadToS3</a></button></span>
+								        </form>
+								        </td>
+								         <td>
+								         <button style="width:70px;"><a th:href="${'/pim/viewcatalog'}">Back</a></button>
+								        </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart End -->
+        
+        <!-- Footer Start -->
+        <div th:replace="fragments/footer :: footer"></div>
+        <!-- Footer Bottom End -->       
+        
+        <!-- Back to Top -->
+        <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+        
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+     <script type="text/javascript" th:src="@{/lib/easing/easing.min.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/slick/slick.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/main.js}"></script>
+        <script type="text/javascript" th:src="@{/js/updatecart.js}"></script>
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
+    </body>
+</html>

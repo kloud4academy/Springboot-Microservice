@@ -1,0 +1,183 @@
+    <body th:fragment="maincontent" xmlns:th="http://www.w3.org/1999/xhtml">
+        <!-- Top bar Start -->
+        <div class="top-bar">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <i class="fa fa-envelope"></i>
+                        support@email.com
+                    </div>
+                    <div class="col-sm-6">
+                        <i class="fa fa-phone-alt"></i>
+                        +012-345-6789
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Top bar End -->
+        <!-- Nav Bar Start -->
+        <!-- Nav Bar End -->      
+         <div th:replace="fragments/topnav :: topnav"></div>
+        <!-- Bottom Bar Start -->
+        <div class="bottom-bar">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="logo">
+                            <a th:href="@{/home}">
+                               <img src="" th:src="@{https://localhost:8080/img/kloud4academy.jpg}" width="150"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="search">
+                            <input type="text" placeholder="Search">
+                            <button><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="user">
+                              <span th:if="${wishlistSize != ''}"> 
+		                        <a th:href="${'/cart/viewwishlist/' + {cartId}}" class="btn wishlist">
+		                                <i class="fa fa-heart"></i>
+		                            		(<span th:text="${wishlistSize}"></span>)
+		                            </a>
+		                        </span>
+		                        <span th:if="${wishlistSize == ''}"> 
+		                        <a href="#" class="btn wishlist">
+		                                <i class="fa fa-heart"></i>
+		                            		(0)
+		                            </a>
+		                        </span>
+                            <a th:href="${cartUrl}" class="btn cart">
+                                <i class="fa fa-shopping-cart"></i>
+                                <span th:if="${cartSize != null}">
+                                (<span th:text="${cartSize}"></span>)
+                            	</span>
+                            	<span th:if="${cartSize == null}">
+                                <span>(0)</span>
+                            	</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Bar End -->       
+        
+       <!--  <div th:replace="fragments/leftnav :: leftnav"></div>  -->
+         <div th:replace="fragments/bannercontent :: leftnav"></div>
+        <!-- Main Slider Start -->
+       
+        <!-- Main Slider End -->      
+        
+        <!-- Brand Start -->
+        <div class="brand">
+            <div class="container-fluid">
+                <div class="brand-slider">
+                    <div class="brand-item"><img src="img/brand-1.png" alt=""></div>
+                    <div class="brand-item"><img src="img/brand-2.png" alt=""></div>
+                    <div class="brand-item"><img src="img/brand-3.png" alt=""></div>
+                    <div class="brand-item"><img src="img/brand-4.png" alt=""></div>
+                    <div class="brand-item"><img src="img/brand-5.png" alt=""></div>
+                    <div class="brand-item"><img src="img/brand-6.png" alt=""></div>
+                </div>
+            </div>
+        </div>
+        <!-- Brand End -->      
+        
+        <!-- Feature Start-->
+        <div class="feature">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fab fa-cc-mastercard"></i>
+                            <h2>Secure Payment</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur elit
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fa fa-truck"></i>
+                            <h2>Worldwide Delivery</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur elit
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fa fa-sync-alt"></i>
+                            <h2>90 Days Return</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur elit
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 feature-col">
+                        <div class="feature-content">
+                            <i class="fa fa-comments"></i>
+                            <h2>24/7 Support</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur elit
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Feature End-->      
+        
+        <!-- Category Start-->
+         <div th:replace="fragments/category :: category"></div>
+        <!-- Category End-->       
+        
+        <!-- Call to Action Start -->
+        <div class="call-to-action">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1>call us for any queries</h1>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="tel:0123456789">+012-345-6789</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Call to Action End -->       
+        
+        <!-- Featured Product Start -->
+        <div th:replace="fragments/featureproducts :: featureproducts"></div>
+        <!-- Featured Product End -->       
+        
+        <!-- Newsletter Start -->
+        <!-- Newsletter End -->        
+        
+        <!-- Recent Product Start -->
+        <div th:replace="fragments/recentproducts :: recentproducts"></div>
+        <!-- Recent Product End -->
+        
+        <!-- Review Start -->
+         <div th:replace="fragments/reviews :: reviews"></div>
+        <!-- Review End -->        
+        
+
+        <!-- Footer Bottom End -->       
+        
+        <!-- Back to Top -->
+        <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+        
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/slick/slick.min.js"></script>
+        
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
+    </body>
+    </html>

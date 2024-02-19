@@ -32,24 +32,24 @@ public class RestClientConfig {
     private int connectionReadTimeout;
 
     
-  //  @Bean
-	public RestTemplate restTemplate() {
-		RestTemplate restTemplate = null;
-		try {
-			org.apache.hc.core5.ssl.TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-		    SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-		    org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory csf = new org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory(sslContext);
-		    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create().register("https", csf).build();
-		    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-		    CloseableHttpClient httpclient = HttpClients.custom()
-		            .setConnectionManager(cm).build();
-		   requestFactory.setHttpClient(httpclient);
-			
-		   restTemplate = new RestTemplate(requestFactory);
-		} catch(Exception e) {
-			
-		}
-		return restTemplate;
-	}
+//    @Bean
+//	public RestTemplate restTemplate() {
+//		RestTemplate restTemplate = null;
+//		try {
+//			org.apache.hc.core5.ssl.TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+//		    SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+//		    org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory csf = new org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory(sslContext);
+//		    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+//		    Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create().register("https", csf).build();
+//		    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+//		    CloseableHttpClient httpclient = HttpClients.custom()
+//		            .setConnectionManager(cm).build();
+//		   requestFactory.setHttpClient(httpclient);
+//			
+//		   restTemplate = new RestTemplate(requestFactory);
+//		} catch(Exception e) {
+//			
+//		}
+//		return restTemplate;
+//	}
 }

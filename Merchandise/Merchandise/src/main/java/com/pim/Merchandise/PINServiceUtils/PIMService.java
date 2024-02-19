@@ -16,7 +16,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -34,7 +33,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.gson.Gson;
 import com.mongodb.bulk.BulkWriteResult;
-import com.mongodb.client.result.UpdateResult;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -142,13 +140,10 @@ public class PIMService {
                 	} else {
                 		productStringArry[count] = productInfo;
                 	}
-                	
-                	logger.info("====Record:" +"count:"+count+"VALUE"+productStringArry[count]);
                 	count++;
                 } 
                 productData = populateCatalogData(productData, productStringArry);
                 productInfoList.add(convertToDbObject(productData));
-                logger.info("====NEXTRecord:----------");
             } 
             commitToDB(productInfoList);
             updateFileStatus(contentId);;
@@ -162,17 +157,13 @@ public class PIMService {
 	}
 	
 	private void updateFileStatus(String fileName) {
-		Query query = new Query().addCriteria(Criteria.where("fileName").is(fileName));
-		PIMProductTracker pimProductTracker = new PIMProductTracker();
 		List<PIMProductTracker> pimProductTrackerList = mongodbRepository.findAll(fileName);
-		if(pimProductTrackerList == null) {
+		if(pimProductTrackerList == null ||pimProductTrackerList.size() == 0) {
+			PIMProductTracker pimProductTracker = new PIMProductTracker();
 			pimProductTracker.setFileName(fileName);
 			pimProductTracker.setStatus("Processed");
 			mongoTemplate.insert(pimProductTracker);
-		} else {
-			Update updateDefinition = new Update().set("status", "ReProcessed");
-			UpdateResult updateResult = mongoTemplate.upsert(query, updateDefinition, PIMProductTracker.class);
-		}
+		} 
 		
 	}
 	private Product convertToDbObject(ProductInfo productInfo) {
@@ -199,7 +190,7 @@ public class PIMService {
 	
 	private ProductInfo populateCatalogData(ProductInfo productData,String[] productArry) {
 		productData.setUuId(productArry[0]);
-		productData.setSkuId(productArry[1]);
+		productData.setProductId(productArry[1]);
     	productData.setCategories(productArry[2]);
     	productData.setEnabled(productArry[3]);
     	productData.setCategory(productArry[4]);

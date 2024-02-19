@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class ProductInfo {
 	private String modelNo;
 	private String  uuId;
-	private String skuId;
+	private String productId;
 	private String categories;
 	private String enabled;
 	private String category;

@@ -17,7 +17,7 @@ import lombok.Setter;
 public class Product {
 
 	private String uuId;
-	private String skuId;
+	private String productId;
 	private String enabled;
 	private String category;
 	private String pattern;
@@ -45,4 +45,5 @@ public class Product {
 	private String builtinSpeakers;
 	private String bluetoothEnabled;
 	private String inch;
+	private String eventAction;
 	}

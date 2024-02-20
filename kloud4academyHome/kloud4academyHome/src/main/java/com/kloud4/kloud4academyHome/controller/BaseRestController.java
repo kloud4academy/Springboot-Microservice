@@ -144,10 +144,11 @@ public class BaseRestController {
 	public String getWishlistCountForCartPage(HttpSession session, HttpServletResponse response,HttpServletRequest request) throws Exception {
 		WishlistRequest wishlistRequestView = new WishlistRequest();
 		wishlistRequestView.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
-		
+		WishlistRequest wishlistResponse = null;
 		ResponseEntity<String> responseEntity = cartClientService.wishListAPICall(wishlistRequestView, response, request,"/cart-ms/wishlist/viewwishlist");
-		WishlistRequest wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
-			
+		if(responseEntity != null && responseEntity.getBody() != null) {
+			wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+		}
 		String itemSize = "";
 		if(wishlistResponse != null && wishlistResponse.getProductIdList() != null && wishlistResponse.getProductIdList().size() > 0) {
 			itemSize = String.valueOf(wishlistResponse.getProductIdList().size());
@@ -163,10 +164,11 @@ public class BaseRestController {
 		if(StringUtils.isBlank(wishlistSize)) {
 			WishlistRequest wishlistRequestView = new WishlistRequest();
 			wishlistRequestView.setWishListId(cartClientService.createOrGetShopperProfile(response, request));
-			
+			WishlistRequest wishlistResponse = null;
 			ResponseEntity<String> responseEntity = cartClientService.wishListAPICall(wishlistRequestView, response, request,"/cart-ms/wishlist/viewwishlist");
-			WishlistRequest wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
-				
+			if(responseEntity != null && responseEntity.getBody() != null) {
+				wishlistResponse = gson.fromJson(responseEntity.getBody(), WishlistRequest.class);
+			}
 			int itemSize = 0;
 			if(wishlistResponse != null && wishlistResponse.getProductIdList() != null && wishlistResponse.getProductIdList().size() > 0) {
 				itemSize = wishlistResponse.getProductIdList().size();

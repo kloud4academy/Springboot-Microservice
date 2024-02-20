@@ -37,6 +37,8 @@ public class CartClientService extends BaseClientService {
 	Logger logger = LoggerFactory.getLogger(CartClientService.class);
 	
 	@Autowired
+	private ClientService clientService;
+	@Autowired
 	private DiscoveryClient discoveryClient;
 	@Autowired
 	@Qualifier("redisTemplate")
@@ -79,11 +81,23 @@ public class CartClientService extends BaseClientService {
 		String responseString = "";
 		WishListItemBean wishListItemBean = new WishListItemBean();
 		List<ProductInfo> productList = new ArrayList<ProductInfo>();
-		for (String productId : wishlistResponse.getProductIdList()) {
-			responseString = (String) redisCacheTemplate.opsForValue().get(productId);
-			ProductInfo productInfo = gson.fromJson(responseString, ProductInfo.class);
-			productList.add(productInfo);
+		ResponseEntity<String> responseEntity = null;
+		try {
+			for (String productId : wishlistResponse.getProductIdList()) {
+				if(redisCacheTemplate.hasKey(productId)) {
+					responseString = (String) redisCacheTemplate.opsForValue().get(productId);
+				} else {
+					responseEntity = clientService.fetchProductUsingProductId(productId);
+					responseString = responseEntity.getBody();
+				}
+				
+				ProductInfo productInfo = gson.fromJson(responseString, ProductInfo.class);
+				productList.add(productInfo);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
+		
 		
 		wishListItemBean.setProductInfoList(productList);
 		return wishListItemBean;

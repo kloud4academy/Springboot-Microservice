@@ -1,5 +1,7 @@
 package com.pim.Merchandise.model;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,7 @@ public class ProductInfo {
 	private String enabled;
 	private String category;
 	private String groups;
-	private String colors;
+	private List<String> colors;
 	private String closurtype;
 	private String specificDetails;
 	private String pattern;
@@ -26,7 +28,7 @@ public class ProductInfo {
 	private String erpName;
 	private String genderType;
 	private String onlineDate;
-	private String imageUrl;
+	private String imageURL;
 	private String image;
 	private String image3;
 	private String longDescription;
@@ -84,7 +86,7 @@ public class ProductInfo {
 	private String spaintmallTitle;
 	private String chinatmallTitle;
 	private String vendorItemNo;
-	private String size;
+	private List<String> sizes;
 	private String features;
 	private String curvedScreen;
 	private String brand;

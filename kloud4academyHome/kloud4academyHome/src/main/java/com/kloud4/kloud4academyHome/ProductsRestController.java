@@ -155,8 +155,11 @@ public class ProductsRestController extends BaseRestController {
 	     ProductInfo productInfo = null;
 	     try {
 	    	 mv.addObject("wishlistSize",getWishlistCountForOtherPage(session, response, request));
-	    	 String productString = (String) redisCacheTemplate.opsForValue().get(productId);
-		     productInfo = gson.fromJson(productString, ProductInfo.class);
+	    	 if(redisCacheTemplate.hasKey(productId)) {
+					String productString = (String) redisCacheTemplate.opsForValue().get(productId);
+				     productInfo = gson.fromJson(productString, ProductInfo.class);
+				}
+	    	 
 	     } catch(Exception e) {
 	    	 logger.error("--------Redis Cache error in SubmitReview method"+e.getMessage());
 	     }
@@ -305,5 +308,20 @@ public class ProductsRestController extends BaseRestController {
 		}
 	    
 		return mv;
+	}
+	
+	
+	@RequestMapping(path="/removecache/{productId}",method = RequestMethod.POST)
+	public String removecacheByProductId(@PathVariable String productId) {
+		logger.info("---------Removed Redisccache item");
+		try {
+			if(redisCacheTemplate.hasKey(productId)) {
+				redisCacheTemplate.delete(productId);
+			}
+		} catch (Exception e) {
+			logger.error("Redis Cache error occurred"+e.getMessage());
+		}
+	    
+		return "Item has been delete success";
 	}
 }

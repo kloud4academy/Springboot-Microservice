@@ -1,5 +1,8 @@
 package com.pim.Merchandise.model;
 
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,21 +24,21 @@ public class Product {
 	private String enabled;
 	private String category;
 	private String pattern;
-	private String colors;
+	private List<String> colors;
 	private String specificDetails;
 	private String StyleName;
 	private String description;
 	private String erpName;
 	private String genderType;
 	private String onlineDate;
-	private String imageUrl;
+	private String imageURL;
 	private String image;
 	private String longDescription;
 	private String price;
 	private String engERP;
 	private String productName;
 	private String vendorItemNo;
-	private String size;
+	private List<String> sizes;
 	private String madein;
 	private String material;
 	private String modelNo;

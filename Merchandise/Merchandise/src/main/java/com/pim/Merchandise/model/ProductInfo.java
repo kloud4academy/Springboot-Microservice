@@ -31,7 +31,7 @@ public class ProductInfo {
 	private String imageURL;
 	private String image;
 	private String image3;
-	private String longDescription;
+	private String productDesc;
 	private String madeIn;
 	private String material;
 	private String metadescription;

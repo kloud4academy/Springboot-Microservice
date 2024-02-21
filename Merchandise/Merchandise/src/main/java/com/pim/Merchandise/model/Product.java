@@ -33,7 +33,7 @@ public class Product {
 	private String onlineDate;
 	private String imageURL;
 	private String image;
-	private String longDescription;
+	private String productDesc;
 	private String price;
 	private String engERP;
 	private String productName;

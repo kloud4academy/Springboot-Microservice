@@ -38,6 +38,10 @@ $("#submitBtn").click(function(event) {
     event.preventDefault();
     fire_ajax_submit();
 });
+$("#addToCart").click(function(event) {
+    event.preventDefault();
+    fire_AddToCart_ajax_submit();
+});
 $('input[type=submit]').click(function() {
     $(this).attr('disabled', 'disabled');
     $(this).parents('form').submit();
@@ -66,6 +70,56 @@ function fire_ajax_submit() {
      $.ajax({
      			type: 'POST',
                 url: '/productdetail/cart',
+                contentType: 'application/json',
+                crossDomain: false,
+                data: JSON.stringify(cartData),
+                async:true,
+                success:function(data) {   
+                  window.location.href = '/cartdetail/cart/'+data.body.msg;
+                },
+                error: function (e) {
+                 $('#feedback').html(e.responseText);
+            		console.log("ERROR : ", e);
+        		}
+            });
+
+}
+function fire_AddToCart_ajax_submit() {
+    var cartData = {}
+    cartData["size"] = '55 inch';
+    cartData["color"] =  'Red';
+    cartData["quantity"] = $("#quantity").val();
+	cartData["productId"] = $("#productIdBtn").val();
+	cartData["price"] = $("#productPrice").val();
+     $.ajax({
+     			type: 'POST',
+                url: '/productdetail/directcart',
+                contentType: 'application/json',
+                crossDomain: false,
+                data: JSON.stringify(cartData),
+                async:true,
+                success:function(data) {   
+                alert(data);
+                 // window.location.href = '/cartdetail/cart/'+data.body.msg;
+                },
+                error: function (e) {
+                alert(e);
+                 $('#feedback').html(e.responseText);
+            		console.log("ERROR : ", e);
+        		}
+            });
+
+}
+function fire_AddToCart_ajax_submit() {
+    var cartData = {}
+    cartData["size"] = $("#sizeInputBtn").val();
+    cartData["color"] =  $("#colorInputBtn").val();
+    cartData["quantity"] = $("#quantity").val();
+	cartData["productId"] = $("#productIdBtn").val();
+	cartData["price"] = $("#productPrice").val();
+     $.ajax({
+     			type: 'POST',
+                url: '/productdetail/directcart',
                 contentType: 'application/json',
                 crossDomain: false,
                 data: JSON.stringify(cartData),

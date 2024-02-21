@@ -114,7 +114,6 @@ public class PIMEventService {
 			String outpt = imageUrl.substring(imageUrl.indexOf("_")+1);
 			String imageurl = "https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/TVCategory/"+outpt;
 			product.setImageURL(imageurl);
-			logger.info("----Final Image Url : "+imageurl);
 		}	
 		if(eventArrayNode.get(i).get("data").get("resource").get("values").has("image_2")) {
 			String image2 = eventArrayNode.get(i).get("data").get("resource").get("values").get("image_2").get(i).get("data").toString().replaceAll("\"", "");
@@ -138,7 +137,7 @@ public class PIMEventService {
 		}
 		if(eventArrayNode.get(i).get("data").get("resource").get("values").has("description")) {
 			String description = eventArrayNode.get(i).get("data").get("resource").get("values").get("description").get(i).get("data").toString().replaceAll("\"", "");
-			product.setLongDescription(description);
+			product.setProductDesc(description);
 		}
 		return product;
 	}

@@ -72,7 +72,6 @@ public class CartRestController extends BaseRestController{
 	@RequestMapping(path="/cartdetail/cart/{cartId}",method = RequestMethod.GET)
 	public ModelAndView cartdetail(@PathVariable String cartId,Model model,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
 		CartUpdate cartUpdate = new CartUpdate();
-		logger.info("--------Called Cart controller");
 		ResponseEntity<String> responseEntity = null;
 		ShoppingCart shoppingCart = null;
 		ModelAndView mv = new ModelAndView();
@@ -345,5 +344,26 @@ public class CartRestController extends BaseRestController{
 		mv.addObject("shoppingCart", shoppingCart);
 		mv.setViewName("wishlist");
 		return mv;
+	}
+	
+	@RequestMapping(value="/productdetail/directcart", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<?> addToCart(@Validated @RequestBody CartData cartData, Errors errors,Model model, HttpSession session, HttpServletResponse response,HttpServletRequest request) {
+		logger.info("Getting called CartRestController---Test-"+cartData.getQuantity() + cartData.getPrice());
+		AjaxResponseBody result = new AjaxResponseBody();
+		if ("0".equalsIgnoreCase(cartData.getQuantity())){
+	    	return ResponseEntity.badRequest().body("Cart validation error: please select the quantity!");
+		}
+		ResponseEntity<String> responseEntity = null;
+		try {
+			responseEntity = clientService.addToCart(cartData,session,response,request);
+		} catch(Exception e) {
+			logger.error("addToCart cart error...."+e.getMessage());
+			result.setMsg("There is addTocart error");
+			return ResponseEntity.badRequest().body("Cart validation backend error please wait for sometime!");
+		}
+		
+		result.setMsg(responseEntity.getBody());
+        return ResponseEntity.ok(ResponseEntity.ok(result));
 	}
 }

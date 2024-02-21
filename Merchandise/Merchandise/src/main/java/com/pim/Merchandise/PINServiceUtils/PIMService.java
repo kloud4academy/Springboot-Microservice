@@ -202,7 +202,7 @@ public class PIMService {
     		colors.add(productArry[18]);
     		productData.setColors(colors);
     		productData.setPattern(productArry[19]);
-    		productData.setLongDescription(productArry[24]);
+    		productData.setProductDesc(productArry[24]);
     		productData.setStyleName(productArry[63]);
     		productData.setExclusive(productArry[33]);
     		productData.setGenderType(productArry[34]);
@@ -219,7 +219,7 @@ public class PIMService {
     		colors.add(productArry[11]);
     		productData.setColors(colors);
     		productData.setPattern(productArry[12]);
-    		productData.setLongDescription(productArry[33]);
+    		productData.setProductDesc(productArry[33]);
     		productData.setStyleName(productArry[56]);
     		productData.setExclusive(productArry[26]);
     		productData.setGenderType(productArry[27]);
@@ -233,7 +233,7 @@ public class PIMService {
     		List<String> colors = new ArrayList<String>();
     		colors.add(productArry[11]);
     		productData.setColors(colors);
-    		productData.setLongDescription(productArry[33]);
+    		productData.setProductDesc(productArry[33]);
     		String imageurl = "https://kloud4-retail.s3.ap-south-1.amazonaws.com/category/"+productArry[56];
     		productData.setImageURL(imageurl);
     		productData.setImage(productArry[57]);

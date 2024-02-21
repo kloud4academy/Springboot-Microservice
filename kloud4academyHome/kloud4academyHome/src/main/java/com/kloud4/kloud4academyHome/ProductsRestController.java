@@ -15,8 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
@@ -63,6 +65,7 @@ public class ProductsRestController extends BaseRestController {
 		    	if(checkCircuitBreaker(responseEntity)) {
 		    		mv.addObject("apiError", "true");
 		    		mv.addObject("error", "true");
+		    		mv.addObject("filterBean", filterBean);
 					mv.setViewName("productlist");
 					return mv;
 		    	}
@@ -72,12 +75,13 @@ public class ProductsRestController extends BaseRestController {
 		    	mv.addObject("priceRangeMap", priceRangeMap);
 		    	mv.addObject("colorList", colorList);
 		    	mv.addObject("filterBean", filterBean);
-				mv.setViewName("productlist");
+		    	mv.setViewName("productlist");
 			}
 		} catch (Exception e) {
 			logger.info("-------Products fetching error in productlist ----");
 			mv.addObject("productResponse", "No Products Found");
 			mv.addObject("error", "true");
+			mv.addObject("filterBean", filterBean);
 			mv.setViewName("productlist");
 		}
 	    
@@ -91,6 +95,7 @@ public class ProductsRestController extends BaseRestController {
 		ModelAndView mv = new ModelAndView();
 	    ResponseEntity<String> responseEntity = null;
 	    String responseString = "";
+	    String viewName = "productdetail";
 	    setCartAndWishListCount(session, response, request, mv);
 		try {
 			try {
@@ -116,13 +121,18 @@ public class ProductsRestController extends BaseRestController {
 		    	if(checkCircuitBreaker(responseEntity, responseString)) {
 		    		mv.addObject("apiError", "true");
 		    		mv.addObject("error", "true");
-					mv.setViewName("productdetail");
+					mv.setViewName(viewName);
 					return mv;
 		    	}
 		    	ProductInfo productInfo = gson.fromJson(responseString, ProductInfo.class);
+		    	if("bags".equalsIgnoreCase(productInfo.getCategory())) {
+		    		viewName = "otherproductdetail";
+		    	} else {
+		    		mv.setViewName(viewName);
+		    	}
 		    	mv.addObject("productInfo", productInfo);
 		    	mv.addObject("error", "");
-				mv.setViewName("productdetail");
+				mv.setViewName(viewName);
 				model.addAttribute("review", review);
 				loadProductReviews(mv, productId);
 			}
@@ -131,7 +141,7 @@ public class ProductsRestController extends BaseRestController {
 			mv.addObject("productInfo", "No Product Found");
 			mv.addObject("error", "true");
 			mv.addObject("productInfo", "");
-			mv.setViewName("productdetail");
+			mv.setViewName(viewName);
 		}
 	    
 		return mv;
@@ -311,9 +321,10 @@ public class ProductsRestController extends BaseRestController {
 	}
 	
 	
-	@RequestMapping(path="/removecache/{productId}",method = RequestMethod.POST)
-	public String removecacheByProductId(@PathVariable String productId) {
-		logger.info("---------Removed Redisccache item");
+	@RequestMapping(path="/removecache",method = RequestMethod.POST)
+	@ResponseBody
+	public String removecacheByProductId(@RequestBody String productId) {
+		logger.info("---------Removed Redisccache item"+productId);
 		try {
 			if(redisCacheTemplate.hasKey(productId)) {
 				redisCacheTemplate.delete(productId);

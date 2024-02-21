@@ -20,4 +20,5 @@ public class ProductInfo {
 	private List<String> colors;
 	private String category;
 	private String imageURL;
+	private String pattern;
 }

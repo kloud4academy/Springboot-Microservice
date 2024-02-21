@@ -51,7 +51,6 @@ public class ServiceManager {
 		Product product = null;
 		try {
 			product = productRepository.findAllById(productId);
-			logger.info("--------Product data-product--"+product);
 			if(product == null) throw new ProductNotFoundException(productId);
 		} catch (Exception e) {
 			throw new MongoDbException(e,productId);

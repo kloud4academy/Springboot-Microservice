@@ -23,7 +23,7 @@
                     <div class="col-lg-9">
                         <div class="cart-page-inner">
                             <div class="table-responsive">
-                                <table class="table table-bordered" style="width:1000px;overflow: hidden;">
+                                <table class="table table-bordered">
                                     <thead class="thead-dark">
                                         <tr>
                                             <th style="width:2px;overflow: hidden;">Product</th>
@@ -45,10 +45,10 @@
                                                 </div>
                                             </td>
                                             <td th:text="${shoppingInfo.productInfo.price}"></td>
-                                            <td>
-                                                    <input type='button' value='-' class='qtyminus' field='quantity' />
-                                                    <input type='text' name='quantity' id='quantity' th:value='${shoppingInfo.toalQuantity}' />
-                                                    <input type="hidden" name='productId' id="productId" th:value='${shoppingInfo.productInfo.productId}'/> 
+                                            <td class="btn-group btn-group-sm">
+                                             <input type='button' value='-' class='qtyminus' field='quantity' />
+                                                     <input type='text' name='quantity' id='quantity' th:value='${shoppingInfo.toalQuantity}' />
+                                            <input type="hidden" name='productId' id="productId" th:value='${shoppingInfo.productInfo.productId}'/> 
                                                     <input type="hidden" name='price' id="price" th:value='${shoppingInfo.productInfo.price}'/> 
                                                     <input type='button' value='+' class='qtyplus' field='quantity' />
                                             </td>

@@ -55,7 +55,7 @@ public class PIMService {
 	private MongoTemplate mongoTemplate;
 	
 	public String processCatalogData(String contentId) {
-		AWSCredentials credentials = new BasicAWSCredentials("AKIA5FTZAU6Z2WUZIO4L","ey61O/hSct+0IA9HSWXjzE/aHTh1uo96nG3UFKcy");
+		AWSCredentials credentials = new BasicAWSCredentials("xxxx","xxx");
 		AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.AP_SOUTH_1).build();
 		GetObjectRequest getObjectRequest = new GetObjectRequest("kloud4-export", contentId);
 		S3Object s3objectResponse = s3client.getObject(getObjectRequest);
@@ -64,7 +64,7 @@ public class PIMService {
 	}
 	
 	public String removeCatalogData(String contentId) {
-		AWSCredentials credentials = new BasicAWSCredentials("AKIA5FTZAU6Z2WUZIO4L","ey61O/hSct+0IA9HSWXjzE/aHTh1uo96nG3UFKcy");
+		AWSCredentials credentials = new BasicAWSCredentials("xxxx","xxx");
 		AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.AP_SOUTH_1).build();
 		DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest("kloud4-export", contentId);
 		s3client.deleteObject(deleteObjectRequest);
@@ -73,7 +73,7 @@ public class PIMService {
 	}
 	
 	public List<PIMFileList> listCatalogDataFiles() {
-		AWSCredentials credentials = new BasicAWSCredentials("AKIA5FTZAU6Z2WUZIO4L","ey61O/hSct+0IA9HSWXjzE/aHTh1uo96nG3UFKcy");
+		AWSCredentials credentials = new BasicAWSCredentials("xx","xxxy");
 		AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.AP_SOUTH_1).build();
 		ObjectListing objectList = s3client.listObjects("kloud4-export");
 		List<S3ObjectSummary> seObjectSummryList = objectList.getObjectSummaries();
@@ -101,7 +101,7 @@ public class PIMService {
 	}
 	
 	public String addCatalogDataFile(MultipartFile file) throws IOException  {
-		AWSCredentials credentials = new BasicAWSCredentials("AKIA5FTZAU6Z2WUZIO4L","ey61O/hSct+0IA9HSWXjzE/aHTh1uo96nG3UFKcy");
+		AWSCredentials credentials = new BasicAWSCredentials("xxx","xxx");
 		AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.AP_SOUTH_1).build();
 		PutObjectRequest putObjectRequest = new EncryptedPutObjectRequest("kloud4-export", file.getOriginalFilename(), file.getInputStream(), null);
 		s3client.putObject(putObjectRequest);
@@ -110,7 +110,7 @@ public class PIMService {
 	}
 	
 	public String reprocessCatalogData(String contentId) {
-		AWSCredentials credentials = new BasicAWSCredentials("AKIA5FTZAU6Z2WUZIO4L","ey61O/hSct+0IA9HSWXjzE/aHTh1uo96nG3UFKcy");
+		AWSCredentials credentials = new BasicAWSCredentials("xxxx","xxx");
 		AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.AP_SOUTH_1).build();
 		GetObjectRequest getObjectRequest = new GetObjectRequest("kloud4-export", contentId);
 		S3Object s3objectResponse = s3client.getObject(getObjectRequest);

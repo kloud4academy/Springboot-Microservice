@@ -26,6 +26,9 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-stream</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.barcode4j/barcode4j -->
+<!-- https://mvnrepository.com/artifact/net.sf.barcode4j/barcode4j -->
+
 		<dependency> 
 	<groupId>com.opencsv</groupId> 
 	<artifactId>opencsv</artifactId> 
@@ -69,6 +72,10 @@
         <artifactId>lombok</artifactId>
         <version>1.18.24</version>
     </dependency>
+<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
+
+<!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf-itext5 -->
+
 </dependencies>
 	<dependencyManagement>
 		<dependencies>

@@ -13,8 +13,10 @@ import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.WebUtils;
@@ -23,7 +25,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class BaseClientService {
-
+	//@Autowired
+   // private RestTemplate resttemplate;
 	Logger logger = LoggerFactory.getLogger(BaseClientService.class);
 	
 	public String createOrGetShopperProfile(HttpServletResponse response, HttpServletRequest request) {
@@ -69,5 +72,9 @@ public class BaseClientService {
 		}
 		return restTemplate;
 	}
+	
+//	public RestTemplate restTemplate() {
+//		return new RestTemplate();
+//	}
 
 }

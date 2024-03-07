@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -49,48 +50,40 @@ public class ClientService extends BaseClientService{
 	@Qualifier("redisTemplate")
 	private RedisTemplate redisCacheTemplate;
 	
+	private static HttpEntity<?> getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		return new HttpEntity<>(headers);
+	}
+	
 	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbackAPIError")
 	@Retry(name="kloud4breaker")
 	public ResponseEntity<String> fetchProductsUsingCategory(String category) throws Exception {
 		List servicesList  = discoveryClient.getServices();
-		logger.info("-------servicesList----"+servicesList);
-		
-		if(servicesList != null && servicesList.contains("productmicroservice")) {
-			for (Object service : servicesList) {
-				if("productmicroservice".equalsIgnoreCase(service.toString())) {
-					String productApiUrl = "https://" +service+ ":" + serverPort + "/nt-ms/fetchProductsUsingCategory";
-					logger.info("-------productApiUrl----"+productApiUrl);
-					ResponseEntity<String> response = restTemplate().getForEntity(productApiUrl + "/"+category, String.class);
-					logger.info("----Print Response Object"+response);
-					return response;
-				}
-			}
+		if(servicesList != null && servicesList.contains("product-service")) {
+			String productApiUrl = "http://product-service:8081" + "/nt-ms/fetchProductsUsingCategory" + "/"+category;
+			logger.info("---------Final Url " +productApiUrl );
+			
+			ResponseEntity<String> response = restTemplate().exchange(productApiUrl,HttpMethod.GET, getHeaders(),String.class);
+			return response;
 		}
-		
-		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8081/nt-ms/fetchProductsUsingCategory" + "/"+category, String.class);
-		return response;
+		return null;
+		//ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8081/nt-ms/fetchProductsUsingCategory" + "/"+category, String.class);
+	//	return response;
 	}
 	
 	@CircuitBreaker(name="kloud4breaker",fallbackMethod="fallbackAPIError")
 	@Retry(name="kloud4breaker")
 	public ResponseEntity<String> fetchProductUsingProductId(String productId) throws Exception {
 		List servicesList  = discoveryClient.getServices();
-		logger.info("-------servicesList----"+servicesList);
-		
-		if(servicesList != null && servicesList.contains("productmicroservice")) {
-			for (Object service : servicesList) {
-				if("productmicroservice".equalsIgnoreCase(service.toString())) {
-					String productApiUrl = "https://" +service+ ":" + "8081" + "/nt-ms/fetchProduct";
-					logger.info("-------productApiUrl----"+productApiUrl);
-					ResponseEntity<String> response = restTemplate().getForEntity(productApiUrl + "/"+productId, String.class);
-					logger.info("----Print Response Object"+response);
-					return response;
-				}
-			}
+		if(servicesList != null && servicesList.contains("product-service")) {
+			String productApiUrl = "http://product-service:8081" + "/nt-ms/fetchProduct" + "/"+productId;
+			ResponseEntity<String> response = restTemplate().exchange(productApiUrl,HttpMethod.GET, getHeaders(),String.class);
+			return response;
 		}
-		logger.info("-------ProductId parameter----"+productId);
-		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8081/nt-ms/fetchProduct" + "/"+productId, String.class);
-		return response;
+		return null;
+//		ResponseEntity<String> response = restTemplate().getForEntity("https://localhost:8081/nt-ms/fetchProduct" + "/"+productId, String.class);
+//		return response;
 	}
 	
 	public String sendProductReview(ProductReviewRequest productReviewReq) {

@@ -55,12 +55,15 @@ public class ProductsRestController extends BaseRestController {
 	
 	@RequestMapping(value={"/productlist/{categoryId}","/productfilter/{categoryId}","/productdetail/productlist/{categoryId}","/cartdetail/cart/productlist/{categoryId}","/cartdetail/{productId}/cartdelete/productlist/{categoryId}","/cart/viewwishlist/productlist/{categoryId}","/cart/deletewishlist/{productId}/productlist/{categoryId}"},method = RequestMethod.GET)
 	public ModelAndView productList(@PathVariable String categoryId,HttpSession session,HttpServletResponse response,HttpServletRequest request) {
+		logger.info("-----------productList called: " + categoryId);
 		ModelAndView mv = new ModelAndView();
 		FilterBean filterBean = new FilterBean();
 	    ResponseEntity<String> responseEntity;
 	    setCartAndWishListCount(session, response, request, mv);
 		try {
+			logger.info("----------before calling -fetchProductsUsingCategory called: " + categoryId);
 			responseEntity = clientService.fetchProductsUsingCategory(categoryId);
+			logger.info("----------after calling -fetchProductsUsingCategory : " + responseEntity);
 		    if(responseEntity != null) {
 		    	if(checkCircuitBreaker(responseEntity)) {
 		    		mv.addObject("apiError", "true");

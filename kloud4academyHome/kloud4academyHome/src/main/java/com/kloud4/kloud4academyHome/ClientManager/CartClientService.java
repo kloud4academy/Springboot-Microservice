@@ -19,17 +19,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.kloud4.kloud4academyHome.controller.CartData;
 
 import bo.ProductInfo;
-import bo.SendCartRequest;
 import bo.WishListItemBean;
 import bo.WishlistRequest;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class CartClientService extends BaseClientService {

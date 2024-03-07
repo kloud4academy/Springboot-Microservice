@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: consumer-service
+  template:
+    metadata:
+      labels:
+        run: consumer-service
+    spec:
+      containers:
+      - name: consumer-service
+        image: yugansethu/consumer-discovery:v22
+        ports:
+        - containerPort: 8080
+          name: https
+        envFrom:
+         - configMapRef:
+            name: myconfigmaps
+        env:
+            - name: CERT_PATH
+              value: /etc/nginx/ssl
+            - name: PASSWORD
+              value: password
+        volumeMounts:
+          - mountPath: "/etc/nginx/ssl"
+            name: nginx-ssl
+            readOnly: true
+      volumes:
+         - name: nginx-ssl
+           secret:
+            secretName: mykey-pem
+         - name: cert
+           secret:
+            secretName: secure-callme-cert
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigmaps
+data:
+  CERT_PATH11: "/opt/secret"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer-service
+  labels:
+    run: consumer-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  type: LoadBalancer
+  selector:
+    run: consumer-service

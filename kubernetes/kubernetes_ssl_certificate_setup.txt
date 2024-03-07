@@ -1,0 +1,52 @@
+yugansethu/consumer-discovery
+
+yugansethu/consumer-discovery:v1
+
+
+https://piotrminkowski.com/2022/06/01/https-on-kubernetes-with-spring-boot-istio-and-cert-manager/
+
+https://piotrminkowski.com/2024/02/19/spring-boot-ssl-hot-reload-on-kubernetes/
+
+
+1) $ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.2/cert-manager.crds.yaml
+
+https://v2.helm.sh/docs/install/
+
+$ helm install my-release cert-manager jetstack/cert-manager \
+    -n cert-manager
+	2) install scoop
+https://adamtheautomator.com/scoop-windows/
+
+2) curl -LO https://git.io/get_helm.sh
+3) helm repo add jetstack https://charts.jetstack.io
+4) helm repo update
+5)kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.1.0/cert-manager.crds.yaml
+6)helm install cert-manager jetstack/cert-manager --version v1.1.0 --namespace default --set ingressShim.defaultIssuerName=letsencrypt-prod --set ingressShim.defaultIssuerKind=ClusterIssuer
+ or
+ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+
+certficate-kd.yml
+certificate-issue.yml
+
+consumer-ssl-workload.yml
+
+producer-workload.yml
+
+7) kdubectl create secret generic mykey-pem --from-file=/opt/secret/
+https://stackoverflow.com/questions/62181523/kubernetes-docker-ssl-certificates-for-web-service-use
+
+8) kubectl create clusterrolebinding service-reader-pod --clusterrole=service-reader --serviceaccount=default:default
+
+9) kubectl create clusterrolebinding admin --clusterrole=cluster-admin --serviceaccount=default:default
+https://10.96.0.1:443/
+
+https://10.109.213.226:8080/
+
+https://10.109.213.226:8080
+
+kdubectl create secret generic mykey-pem --from-file=/opt/certs/ 
+kubectl create secret generic mypass --from-file=/opt/certs/password.txt
+
+service-account.yml
+http://localhost:8080/productlist/Women
+http://127.0.0.1:62279/

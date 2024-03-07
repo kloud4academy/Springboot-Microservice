@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigmap
+  namespace: default
+data:
+  MOUNT_PATH: "/run/desktop/mnt/host/C/certs"

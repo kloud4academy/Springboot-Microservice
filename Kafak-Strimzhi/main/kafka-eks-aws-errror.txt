@@ -1,0 +1,53 @@
+at java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[?:?]
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[?:?]
+        at java.lang.Thread.run(Thread.java:833) ~[?:?]
+2023-06-28 11:59:45 WARN  AbstractOperator:525 - Reconciliation #71(timer) Kafka(kafka/arivu-cluster): Failed to reconcile
+io.strimzi.operator.cluster.operator.resource.KafkaRoller$FatalProblem: Pod is unschedulable
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.checkReconfigurability(KafkaRoller.java:498) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.restartIfNecessary(KafkaRoller.java:384) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.lambda$schedule$6(KafkaRoller.java:307) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) ~[?:?]
+        at java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[?:?]
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[?:?]
+        at java.lang.Thread.run(Thread.java:833) ~[?:?]
+2023-06-28 12:01:43 INFO  ClusterOperator:139 - Triggering periodic reconciliation for namespace kafka
+2023-06-28 12:01:43 INFO  AbstractOperator:239 - Reconciliation #72(timer) Kafka(kafka/arivu-cluster): Kafka arivu-cluster will be checked for creation or modification
+2023-06-28 12:01:45 INFO  KafkaRoller:490 - Reconciliation #72(timer) Kafka(kafka/arivu-cluster): Pod arivu-cluster-kafka-0/0 needs to be restarted, because it seems to be stuck and restart might help
+2023-06-28 12:01:45 INFO  KafkaRoller:313 - Reconciliation #72(timer) Kafka(kafka/arivu-cluster): Could not verify pod arivu-cluster-kafka-0/0 is up-to-date, giving up after 10 attempts. Total delay between attempts 127750ms
+io.strimzi.operator.cluster.operator.resource.KafkaRoller$FatalProblem: Pod is unschedulable
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.checkReconfigurability(KafkaRoller.java:498) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.restartIfNecessary(KafkaRoller.java:384) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.lambda$schedule$6(KafkaRoller.java:307) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) ~[?:?]
+        at java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[?:?]
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[?:?]
+        at java.lang.Thread.run(Thread.java:833) ~[?:?]
+2023-06-28 12:01:45 ERROR AbstractOperator:260 - Reconciliation #72(timer) Kafka(kafka/arivu-cluster): createOrUpdate failed
+io.strimzi.operator.cluster.operator.resource.KafkaRoller$FatalProblem: Pod is unschedulable
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.checkReconfigurability(KafkaRoller.java:498) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.restartIfNecessary(KafkaRoller.java:384) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.lambda$schedule$6(KafkaRoller.java:307) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) ~[?:?]
+        at java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[?:?]
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[?:?]
+        at java.lang.Thread.run(Thread.java:833) ~[?:?]
+2023-06-28 12:01:45 WARN  AbstractOperator:525 - Reconciliation #72(timer) Kafka(kafka/arivu-cluster): Failed to reconcile
+io.strimzi.operator.cluster.operator.resource.KafkaRoller$FatalProblem: Pod is unschedulable
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.checkReconfigurability(KafkaRoller.java:498) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.restartIfNecessary(KafkaRoller.java:384) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at io.strimzi.operator.cluster.operator.resource.KafkaRoller.lambda$schedule$6(KafkaRoller.java:307) ~[io.strimzi.cluster-operator-0.35.1.jar:0.35.1]
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) ~[?:?]
+        at java.util.concurrent.FutureTask.run(FutureTask.java:264) ~[?:?]
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[?:?]
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[?:?]
+        at java.lang.Thread.run(Thread.java:833) ~[?:?]
+[ec2-user@ip-172-31-5-35 ~]$ 

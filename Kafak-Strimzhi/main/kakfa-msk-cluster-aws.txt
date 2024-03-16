@@ -1,0 +1,144 @@
+================MSK AWS cluster for kafka for 3 AZs ===============
+https://docs.aws.amazon.com/msk/latest/developerguide/msk-create-cluster.html
+
+===========Kafka cluster setup using EKS and kuberenetes wiht Helm Tool
+https://dev.to/bensooraj/up-and-running-with-kafka-on-aws-eks-using-strimzi-25ga
+
+yugansethu/aws-kafkastream-dynamodb:super
+kubectl create clusterrolebinding tiller-clusteradmin-mkp-int --clusterrole=cluster-admin --serviceaccount=marketplace-int:tiller
+
+
+helm init --service-account=tiller
+
+helm list --namespace cluster-admin
+
+
+========================= ignore helo init and other steps============
+helm repo add stable https://charts.helm.sh/stable
+
+helm repo update
+//add helm chart repo for Strimzi
+helm repo add strimzi https://strimzi.io/charts/
+//install it! (I have used strimzi-kafka as the release name)
+helm install strimzi-kafka strimzi/strimzi-kafka-operator
+
+
+pod/my-cluster-kafka-0
+service/my-cluster-kafka-brokers
+NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                               AGE
+service/kubernetes                    ClusterIP   10.96.0.1       <none>        443/TCP                               231d
+service/my-cluster-kafka-bootstrap    ClusterIP   10.99.255.178   <none>        9091/TCP,9092/TCP,9093/TCP            48m
+service/my-cluster-kafka-brokers      ClusterIP   None            <none>        9090/TCP,9091/TCP,9092/TCP,9093/TCP   48m
+service/my-cluster-zookeeper-client   ClusterIP   10.102.167.63   <none>        2181/TCP                              49m
+service/my-cluster-zookeeper-nodes
+
+================final host name : ===================
+my-cluster-kafka-bootstrap:9092 
+
+====================== Kafka cluster setup EKS HELM Kubernetes===================
+
+EKS Cluster Setup in AWS:
+1) Create IAM user and attach below policies
+-CloudFormationFullAccess
+-IAMFullAccess
+-DynamoDBFullaccess
+-AdminstaraAccess
+-EC2IntaceFullAccess
+-AmazonEKS_CNI_Policy
+-AmazonEKSClusterPolicy
+
+2) create AccessKey and AccessToken for IAM user using ->Menu->user-securitycredentials->generatetoken and secret.
+3) Launch EC2 intance and asign securitygroup
+4) Connect EC2 instance and go AWS command console
+5) aws --version
+6) Download AWS CLI from git  
+- curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
+- unzip awscliv2.zip
+- which aws
+- sudo ./aws/install --bin-dir /usr/bin --install-dir /usr/bin/aws-cli --update
+- aws --version
+- aws configure
+7) Enter below details
+- AccessKey
+- AccessSecretKey
+- aws region
+- format to Json
+8)Install EKSCTL
+- curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/bin
+- eksctl version
+- eksctl --help
+8)Create EKS Cluster
+eksctl create cluster --name devyuviwokergrup --version 1.22 --region ap-south-1 --nodegroup-name standard-yuvi-workers --node-type t2.micro --nodes 2 --nodes-min 1 --nodes-max 2 --managed
+9) Install KubCTL
+curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+
+install accordingly
+10)Finally, run the command below to update your kubectl config (update-kubeconfig) with your cluster endpoint, certificate, and credentials.
+aws eks update-kubeconfig --name devyuviwokergrup --region ap-south-1
+
+11) kubectl create namespace kafka;kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
+
+kubectl delete namespace kafka;kubectl delete -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
+
+
+12) deploy below yamls
+- eks-kafka-cluster-production.yaml
+- topic-creation.yaml
+- aws-kafka-workload.yaml
+
+14) Finding brokers listT
+pod/my-cluster-kafka-0
+service/my-cluster-kafka-brokers
+NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                               AGE
+service/kubernetes                    ClusterIP   10.96.0.1       <none>        443/TCP                               231d
+service/my-cluster-kafka-bootstrap    ClusterIP   10.99.255.178   <none>        9091/TCP,9092/TCP,9093/TCP            48m
+service/my-cluster-kafka-brokers      ClusterIP   None            <none>        9090/TCP,9091/TCP,9092/TCP,9093/TCP   48m
+service/my-cluster-zookeeper-client   ClusterIP   10.102.167.63   <none>        2181/TCP                              49m
+service/my-cluster-zookeeper-nodes
+
+================final host name : ===================
+my-cluster-kafka-bootstrap:9092 
+16) Strimzhi : git hub url - https://github.com/strimzi/strimzi-kafka-operator/tree/main/examples/kafka
+
+
+kubectl get strimzi
+
+kubectl delete $(kubectl get strimzi -o name)
+
+helm uninstall strimzi-kafka strimzi/strimzi-kafka-operator
+
+kubectl apply -f examples/install/cluster-operator/04-ClusterRoleBinding-strimzi-cluster-operator-topic-operator-delegation.yaml
+oc -n drivenow-production apply -f examples/install/cluster-operator/04-ClusterRoleBinding-strimzi-cluster-operator-entity-operator-delegation.yaml
+
+
+
+https://strimzi.io/quickstarts/
+
+kubectl -n kafka run kafka-consumer -ti --image=quay.io/strimzi/kafka:0.35.1-kafka-3.4.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
+
+
+https://faun.pub/ingress-enabled-strimzi-kafka-deployment-on-aws-eks-40f451eecd3c   ==== AWS EKS STRIMZI setup
+
+https://a6dd488ffc2664f6581a7723ee36da1a-968640056.ap-south-1.elb.amazonaws.com:443/publishEmpDetails/dummy/sioos/klop/3434/rter
+
+
+eksctl-devarindodgrup-cluster
+
+eksctl-devariwokergrup-nodegroup-standard-ari-workers
+
+eksctl-devariwokergrup-cluster
+
+kubectl -n kafka delete $(kubectl get strimzi -o name -n kafka)
+
+devyuviwokergrup-standard-yuvi-workers-Node
+
+kubectl get nodes --kubeconfig /etc/kubernetes/admin.conf
+
+awscloud container clusters get-credentials "CLUSTER NAME"
+
+mkdir ~/.kube
+sudo kubectl config view --raw | tee ~/.kube/config
+chmod 600 ~/.kube/config
